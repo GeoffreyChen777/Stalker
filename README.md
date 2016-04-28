@@ -1,2 +1,2 @@
 # Stalker
-A Android APP for track TVshow.
+A Android APP to track TVshow.
