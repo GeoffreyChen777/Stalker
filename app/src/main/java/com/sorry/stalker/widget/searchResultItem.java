@@ -64,7 +64,7 @@ public class searchResultItem extends LinearLayout{
         this(context, null);
     }
 
-    public searchResultItem(Context context, AttributeSet attrs) {
+    public searchResultItem(final Context context, AttributeSet attrs) {
         super(context, attrs);
         // 导入布局
         LayoutInflater.from(context).inflate(R.layout.search_result_item, this, true);
@@ -129,40 +129,20 @@ public class searchResultItem extends LinearLayout{
         TextPaint detialTp = detial.getPaint();
         detialTp.setFakeBoldText(true);*/
         checkBoxButton.setOnClickListener(checkBoxListener);
-        image.getViewTreeObserver().addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
+
+        image.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
-            public void  onDraw() {
-                Log.i("Img","Pre");
-                Bitmap bmp = loadBitmapFromView(image);
-                if(bmp == null)
-                    Log.i("IMG","Null");
-                imageBlur.setImageBitmap(FastBlur.doBlur(bmp,20,true));
+            public void onGlobalLayout() {
+                Log.i("Listener","============");
+                Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+                Drawable drawable =new BitmapDrawable(getResources(),FastBlur.doBlur(Bitmap.createBitmap(bitmap, 0, image.getHeight()-UnitConversion.dip2px(context,220), image.getWidth(), UnitConversion.dip2px(context,220), null, false), 80, false));
+
+                imageBlur.setBackground(drawable);
             }
         });
 
 
-    }
-    public static Bitmap loadBitmapFromView(View v)
-    {
-        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
 
-        Canvas c = new Canvas(b);
-        v.layout(0, 0, v.getLayoutParams().width, v.getLayoutParams().height);
-        v.draw(c);
-        return b;
-    }
-
-
-    static Bitmap drawableToBitmap(Drawable drawable) // drawable 转换成bitmap
-    {
-        int width = drawable.getIntrinsicWidth();// 取drawable的长宽
-        int height = drawable.getIntrinsicHeight();
-        Bitmap.Config config = drawable.getOpacity() != PixelFormat.OPAQUE ?Bitmap.Config.ARGB_8888:Bitmap.Config.RGB_565;// 取drawable的颜色格式
-        Bitmap bitmap = Bitmap.createBitmap(width, height, config);// 建立对应bitmap
-        Canvas canvas = new Canvas(bitmap);// 建立对应bitmap的画布
-        drawable.setBounds(0, 0, width, height);
-        drawable.draw(canvas);// 把drawable内容画到画布中
-        return bitmap;
     }
 
     private OnClickListener checkBoxListener = new OnClickListener() {
@@ -181,39 +161,6 @@ public class searchResultItem extends LinearLayout{
             }
         }
     };
-
-    private void applyBlur() {
-        image.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                image.getViewTreeObserver().removeOnPreDrawListener(this);
-                image.setDrawingCacheEnabled(true);
-                image.buildDrawingCache();
-                Log.i("Img","Pre");
-                Bitmap bmp = image.getDrawingCache();
-                blur(bmp, image);
-                return true;
-            }
-        });
-    }
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    private void blur(Bitmap bkg, View view) {
-        float radius = 20;
-        float scaleFactor = 1;
-        Bitmap overlay = Bitmap.createBitmap((int) (view.getMeasuredWidth()/scaleFactor),
-                (int) (view.getMeasuredHeight()/scaleFactor), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(overlay);
-        canvas.translate(-view.getLeft()/scaleFactor, -view.getTop()/scaleFactor);
-        canvas.scale(1 / scaleFactor, 1 / scaleFactor);
-        Paint paint = new Paint();
-        paint.setFlags(Paint.FILTER_BITMAP_FLAG);
-        if(bkg == null)
-            Log.i("Img","null");
-        canvas.drawBitmap(bkg, 0, 0, paint);
-
-        overlay = FastBlur.doBlur(overlay, (int)radius, true);
-        view.setBackground(new BitmapDrawable(getResources(), overlay));
-    }
 
     public void setImageResource(int resId) {
         image.setImageResource(resId);

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="160dp"
+    android:layout_height="105dp"
+    android:layout_rowWeight="1"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:background="@color/colorBackground"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="1dp">
+    <com.sorry.stalker.widget.TopCropImageView
+        android:id="@+id/small_image"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:src="@drawable/holdorerror"
+        android:scaleType="matrix"/>
+    <RelativeLayout
+        android:id="@+id/nameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/small_image"
+        android:background="@color/colorItemBackground">
+        <TextView
+            android:id="@+id/small_name"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="name"
+            android:layout_marginLeft="10dp"
+            android:textSize="11sp"
+            android:singleLine="true"
+            android:maxWidth="110dp"
+            android:ellipsize="end"
+            android:clickable="false"
+            />
+        <ImageButton
+            android:id="@+id/small_add_button"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentRight="true"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/ic_add_gray"
+            android:background="@null"/>
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

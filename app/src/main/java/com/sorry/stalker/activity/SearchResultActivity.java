@@ -1,18 +1,25 @@
 package com.sorry.stalker.activity;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Space;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONArray;
@@ -21,8 +28,10 @@ import com.github.ybq.android.spinkit.SpinKitView;
 import com.sorry.stalker.R;
 import com.sorry.stalker.datastructure.ShowsInfor;
 import com.sorry.stalker.tools.UnitConversion;
+import com.sorry.stalker.widget.SmallSearchResultItem;
 import com.sorry.stalker.widget.searchResultItem;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,10 +52,10 @@ public class SearchResultActivity extends AppCompatActivity {
     private ImageButton confirmButton;
     private ScrollView searchResltList;
     private List searchResultInforList;
-    private LinearLayout liLayout;
+    private RelativeLayout liLayout;
     private LinearLayout searchResultActivityLayout;
-    private HashMap nameMap;
-    private int flag;
+    private GridLayout searchResultLayout;
+    private DisplayMetrics dm;
     private SpinKitView loadingAnimation;
     protected static final int GUIUPDATEIDENTIFIER = 0x101;
     protected static final int UPDATEIDENTIFIER = 0x102;
@@ -65,11 +74,12 @@ public class SearchResultActivity extends AppCompatActivity {
         confirmButton = (ImageButton) findViewById(R.id.confirmButton);
         searchResltList = (ScrollView) findViewById(R.id.searchResltList);
         loadingAnimation = (SpinKitView) findViewById(R.id.loadingAnimation);
-        liLayout = (LinearLayout) findViewById(R.id.searchResltListLayout);
+        liLayout = (RelativeLayout) findViewById(R.id.searchResltLayout);
+        searchResultLayout = (GridLayout) findViewById(R.id.searchResultListLayout);
         searchResultActivityLayout = (LinearLayout) findViewById(R.id.searchResltActivityLayout);
         searchResultInforList = new ArrayList();
-        flag = 0;
-        nameMap = new HashMap();
+        Resources resources = this.getResources();
+        dm = resources.getDisplayMetrics();
         backButton.setOnClickListener(toolBarClickListener);
         confirmButton.setOnClickListener(toolBarClickListener);
         TextView titleView = (TextView) findViewById(R.id.searchResultTitleView);
@@ -81,7 +91,6 @@ public class SearchResultActivity extends AppCompatActivity {
             searchText = extras.getString("searchText");
             getInforFromWeb(searchText);
         }
-
     }
 
     Handler myHandler = new Handler(){
@@ -100,6 +109,12 @@ public class SearchResultActivity extends AppCompatActivity {
                     loadingAnimation.setVisibility(View.GONE);
                     ShowsInfor infor = (ShowsInfor) msg.obj;
                     updateUI(0, infor.name, infor.engname, infor.status, infor.overview, infor.posterImgUrl);
+                    break;
+                }
+                case UPDATEIDENTIFIER:{
+                    loadingAnimation.setVisibility(View.GONE);
+                    ShowsInfor infor = (ShowsInfor) msg.obj;
+                    updateUI(1, infor.name, infor.engname, infor.status, infor.overview, infor.imgUrl);
                     break;
                 }
             }
@@ -192,13 +207,14 @@ public class SearchResultActivity extends AppCompatActivity {
 
     public void parseInfor(String jsonString) {
         JSONArray jsonArray = JSONArray.parseArray(jsonString);
-        final Message message = new Message();
+        Log.i("Size",jsonArray.size()+"");
+        final Message flagMessage = new Message();
 
         if (jsonArray.size() != 1) {
-            message.what = UPDATEIDENTIFIER;
+            flagMessage.what = UPDATEIDENTIFIER;
         }
         else{
-            message.what = UPDATESINGLEIDENTIFIER;
+            flagMessage.what = UPDATESINGLEIDENTIFIER;
         }
 
         for (int i = 0; i < jsonArray.size(); i++) {
@@ -249,6 +265,8 @@ public class SearchResultActivity extends AppCompatActivity {
                                 showInfor.name = showInfor.engname;
                                 showInfor.engname = "";
                             }
+                            Message message = new Message();
+                            message.what = flagMessage.what;
                             message.obj = showInfor;
                             myHandler.sendMessage(message);
                         }
@@ -262,14 +280,48 @@ public class SearchResultActivity extends AppCompatActivity {
 
     public void updateUI(int type, String name, String engname, String status, String overview, String imageUrl) {
         if(type == 1) {
-            searchResultItem searchResultItem = new searchResultItem(SearchResultActivity.this);
-            searchResultItem.setTextViewText(name, status, overview, name);
-            Log.i("Size11", searchResultItem.getImgWidth() + searchResultItem.getImgHeight() + "");
-            Picasso.with(SearchResultActivity.this).load(imageUrl).placeholder(R.drawable.holdorerror).error(R.drawable.holdorerror).resize(MainActivity.screenWidth, UnitConversion.dip2px(this, 175)).centerCrop().into(searchResultItem.getImageView());
-            liLayout.addView(searchResultItem);
+            final SmallSearchResultItem smallSearchResultItem = new SmallSearchResultItem(SearchResultActivity.this);
+            smallSearchResultItem.setName(name);
+            Space sp = new Space(this);
+            Space sp2 = new Space(this);
+            RelativeLayout.LayoutParams spacerp = new RelativeLayout.LayoutParams(((dm.widthPixels-2*UnitConversion.dip2px(this,160))/3),GridLayout.LayoutParams.WRAP_CONTENT);
+            RelativeLayout.LayoutParams spacerp2 = new RelativeLayout.LayoutParams(((dm.widthPixels-2*UnitConversion.dip2px(this,160))/6),GridLayout.LayoutParams.WRAP_CONTENT);
+            if(searchResultLayout.getChildCount()%2 == 0) {
+                sp.setLayoutParams(spacerp);
+                sp2.setLayoutParams(spacerp2);
+            }
+            else{
+                sp.setLayoutParams(spacerp2);
+                sp2.setLayoutParams(spacerp);
+            }
+
+            Picasso.with(SearchResultActivity.this)
+                    .load(imageUrl).placeholder(R.drawable.holdorerror)
+                    .error(R.drawable.holdorerror)
+                    .resize(UnitConversion.dip2px(this,160f),UnitConversion.dip2px(this,90f))
+                    .into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            smallSearchResultItem.setImage(bitmap);
+
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+                            Log.i("faile","noimage");
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                        }
+                    });
+            searchResultLayout.addView(sp);
+            searchResultLayout.addView(smallSearchResultItem);
+            searchResultLayout.addView(sp2);
+
         }
         if(type == 0){
-            Log.i("Stalker", "UpdateUI!"+name+status+overview+name);
             searchResultItem searchResultItem = new searchResultItem(SearchResultActivity.this);
             searchResultItem.setTextViewText(name, status, overview, engname);
             Picasso.with(SearchResultActivity.this).load(imageUrl).placeholder(R.drawable.holdorerror).error(R.drawable.holdorerror).resize(MainActivity.screenWidth, searchResultActivityLayout.getHeight()).centerCrop().into(searchResultItem.getImageView());
