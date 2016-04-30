@@ -24,6 +24,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -49,7 +50,7 @@ public class searchResultItem extends LinearLayout{
     private LinearLayout second;
     private LinearLayout scrollLayout;
     private RelativeLayout outLayout;
-    private ImageButton checkBoxButton;
+    private Button checkBoxButton;
     private ObservableHorizontalScrollView scrollView;
     private FrameLayout relayout;
     private boolean isSelected;
@@ -60,13 +61,14 @@ public class searchResultItem extends LinearLayout{
     final AnimationSet selectAnimation;
     final ScaleAnimation selectImgScaleAnimation;
 
-    public searchResultItem(Context context) {
-        this(context, null);
+    public searchResultItem(Context context,int height) {
+        this(context, height, null);
     }
 
-    public searchResultItem(final Context context, AttributeSet attrs) {
+    public searchResultItem(final Context context, int height, AttributeSet attrs) {
         super(context, attrs);
         // 导入布局
+
         LayoutInflater.from(context).inflate(R.layout.search_result_item, this, true);
         image = (ImageView) findViewById(R.id.image);
         imageBlur = (ImageView) findViewById(R.id.imageBlur);
@@ -76,17 +78,15 @@ public class searchResultItem extends LinearLayout{
         detial = (TextView) findViewById(R.id.showDetial);
         relayout = (FrameLayout) findViewById(R.id.resultItemLayout);
         outLayout = (RelativeLayout) findViewById(R.id.outLayout);
-
-        checkBoxButton = (ImageButton) findViewById(R.id.checkBoxButton);
+        outLayout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, height));
+        checkBoxButton = (Button) findViewById(R.id.checkBoxButton);
         isSelected = false;
 
-        Typeface tf1 = Typeface.createFromAsset(getResources().getAssets(), "fonts/HanHeiSC-Thin.otf");
+        Typeface tf1 = Typeface.createFromAsset(getResources().getAssets(), "fonts/LithosPro-Regular.otf");
         Typeface tf2 = Typeface.createFromAsset(getResources().getAssets(), "fonts/MicrosoftYaHeiGB.ttf");
-        Typeface tf3 = Typeface.createFromAsset(getResources().getAssets(), "fonts/HanHeiSC-Thin.otf");
-        //this.setFont(1, tf2);
         this.setFont(4, tf1);
         this.setFont(2, tf1);
-        this.setFont(3, tf3);
+
 
 
         selectScaleAnimation = new ScaleAnimation(1.0f, 1.2f, 1.0f, 1.2f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -133,11 +133,12 @@ public class searchResultItem extends LinearLayout{
         image.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                Log.i("Listener","============");
-                Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
-                Drawable drawable =new BitmapDrawable(getResources(),FastBlur.doBlur(Bitmap.createBitmap(bitmap, 0, image.getHeight()-UnitConversion.dip2px(context,220), image.getWidth(), UnitConversion.dip2px(context,220), null, false), 80, false));
+                if(image.getDrawable() != null) {
+                    Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
+                    Drawable drawable = new BitmapDrawable(getResources(), FastBlur.doBlur(Bitmap.createBitmap(bitmap, 0, image.getHeight() - UnitConversion.dip2px(context, 220), image.getWidth(), UnitConversion.dip2px(context, 220), null, false), 80, false));
 
-                imageBlur.setBackground(drawable);
+                    imageBlur.setBackground(drawable);
+                }
             }
         });
 
@@ -150,12 +151,12 @@ public class searchResultItem extends LinearLayout{
         public void onClick(View v) {
             if(!isSelected) {
                 isSelected = true;
-                checkBoxButton.setImageResource(R.mipmap.ic_checkbox);
+
                 image.startAnimation(selectImgScaleAnimation);
             }
             else{
                 isSelected = false;
-                checkBoxButton.setImageResource(R.mipmap.ic_checkbox_uncheck);
+
                 image.startAnimation(selectImgScaleAnimation);
 
             }

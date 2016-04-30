@@ -2,12 +2,12 @@
 <resources>
 
     <color name="colorPrimary">#2a2a2a</color>
-    <color name="colorPrimaryDark">#2a2a2a</color>
+    <color name="colorPrimaryDark">#100f0f</color>
     <color name="colorAccent">#aaaaaa</color>
     <color name="colorLine">#222222</color>
-    <color name="colorImageMask">#54000000</color>
+    <color name="colorImageMask">#b3000000</color>
     <color name="colorName">#efefef</color>
-    <color name="colorBackground">#313131</color>
+    <color name="colorBackground">#101010</color>
     <color name="colorItemBackground">#222222</color>
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#fff</color>

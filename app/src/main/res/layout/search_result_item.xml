@@ -6,146 +6,115 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorItemBackground">
+    android:background="@drawable/loading"
+    >
 
     <ImageView
         android:id="@+id/image"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"/>
-
-<FrameLayout
-    android:layout_width="match_parent"
-    android:layout_height="220dp"
-    android:orientation="vertical"
-    android:id="@+id/resultItemLayout"
-    android:layout_alignParentBottom="true"
-    >
-    <!--
-        <com.sorry.stalker.widget.TopCropImageView
-            android:id="@+id/image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/testimg"
-            android:scaleType="matrix" />-->
-    <ImageView
-        android:id="@+id/imageBlur"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:scaleType="centerCrop"
         />
 
-    <View
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorImageMask"
-        />
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <RelativeLayout
+        android:layout_height="250dp"
+        android:orientation="vertical"
+        android:id="@+id/resultItemLayout"
+        android:layout_alignParentBottom="true"
+        >
+        <!--
+            <com.sorry.stalker.widget.TopCropImageView
+                android:id="@+id/image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/testimg"
+                android:scaleType="matrix" />-->
+        <ImageView
+            android:id="@+id/imageBlur"
             android:layout_width="match_parent"
-            android:layout_height="34dp"
-            android:orientation="horizontal"
-            android:clickable="false"
-            android:layout_marginTop="26dp"
-            android:layout_marginLeft="26dp"
-            android:layout_marginRight="26dp"
-
-            >
-            <View
-                android:id="@+id/nameSign"
-                android:layout_width="4dp"
-                android:layout_height="23dp"
-                android:layout_gravity="bottom"
-                android:layout_marginRight="11dp"
-                android:layout_marginBottom="3dp"
-                android:layout_alignBottom="@+id/showEngName"
-                android:background="@color/colorBule"
-                />
-            <TextView
-                android:id="@+id/showName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:text="绿箭侠"
-                android:textSize="22sp"
-                android:textColor="@color/colorName"
-                android:clickable="false"
-                android:singleLine="true"
-                android:maxWidth="250dp"
-                android:ellipsize="end"
-                android:layout_alignBottom="@+id/showEngName"
-                android:layout_toRightOf="@+id/nameSign"
-                android:layout_toEndOf="@+id/nameSign" />
-            <TextView
-                android:id="@+id/showEngName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/showName"
-                android:layout_alignParentBottom="true"
-                android:layout_gravity="bottom"
-                android:text="Arrow"
-                android:textSize="16dp"
-                android:layout_marginLeft="14dp"
-                android:layout_marginBottom="-2dp"
-                android:textColor="@color/colorName"
-                android:clickable="false"
-                android:singleLine="true"
-                />
-            <ImageButton
-                android:id="@+id/checkBoxButton"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:scaleType="centerInside"
-                android:background="@null"
-                android:src="@mipmap/ic_checkbox_uncheck"/>
-
-        </RelativeLayout>
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            />
 
         <View
-            android:layout_width="130dp"
-            android:layout_height="2px"
-            android:background="@color/colorWhite"
-            android:layout_marginLeft="35dp"
-            android:layout_marginTop="6dp"/>
-        <TextView
-            android:id="@+id/showInfor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorImageMask"
+            />
 
-            android:text="ended"
-            android:textSize="12dp"
-            android:textColor="@color/colorName"
-            android:clickable="false"
-            android:layout_marginTop="1dp"
-            android:layout_marginLeft="42dp"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:clickable="false"
+                android:gravity="center_horizontal"
+                >
+                <TextView
+                    android:id="@+id/showName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:text="绿箭侠"
+                    android:textStyle="bold"
+                    android:textSize="17sp"
+                    android:textColor="@color/colorName"
+                    android:clickable="false"
+                    android:singleLine="true"
+                    android:maxWidth="250dp"
+                    android:ellipsize="end"/>
+                <TextView
+                    android:id="@+id/showEngName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:text="ARROW"
+                    android:textSize="9sp"
+                    android:textColor="@color/colorName"
+                    android:clickable="false"
+                    android:singleLine="true"
+                    />
+                <TextView
+                    android:id="@+id/showInfor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="RETURNING SERIES  "
+                    android:textSize="9sp"
+                    android:textColor="@color/colorName"
+                    android:clickable="false"
+                    android:layout_marginTop="12dp"
 
-            android:ellipsize="end"/>
-        <TextView
-            android:id="@+id/showDetial"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:text="@string/testlong"
-            android:textSize="12dp"
-            android:textColor="@color/colorName"
-            android:clickable="false"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="26dp"
-            android:layout_marginLeft="25dp"
-            android:layout_marginRight="25dp"
-            android:maxLines="6"
-            android:ellipsize="end"
-            android:lineSpacingExtra="1dp"/>
+                    android:ellipsize="end"/>
+                <TextView
+                    android:id="@+id/showDetial"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:text="@string/testlong"
+                    android:textSize="10sp"
+                    android:textColor="@color/colorName"
+                    android:clickable="false"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:maxLines="4"
+                    android:ellipsize="end"
+                    android:lineSpacingExtra="6dp"/>
+                <Button
+                    android:id="@+id/checkBoxButton"
+                    android:layout_width="60dp"
+                    android:layout_height="22dp"
+                    android:scaleType="centerInside"
+                    android:background="@mipmap/ic_add_black"
+                    android:text="ADD    "
+                    android:textAlignment="viewEnd"
+                    android:gravity="end|center_vertical"
+                    android:textSize="10sp"
+                    android:textColor="@color/colorBlack"/>
 
-    </LinearLayout>
+            </LinearLayout>
     </FrameLayout>
 
     </RelativeLayout>

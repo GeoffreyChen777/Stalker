@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -43,6 +44,7 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.Cache;
 
 public class SearchResultActivity extends AppCompatActivity {
 
@@ -66,12 +68,11 @@ public class SearchResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_result);
-        mClient = new OkHttpClient();
-        Toolbar toolbar = (Toolbar) findViewById(R.id.searchResultToolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        backButton = (ImageButton) findViewById(R.id.backButton);
-        confirmButton = (ImageButton) findViewById(R.id.confirmButton);
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(this.getCacheDir(), cacheSize);
+        mClient = new OkHttpClient.Builder()
+                .cache(cache)
+                .build();
         searchResltList = (ScrollView) findViewById(R.id.searchResltList);
         loadingAnimation = (SpinKitView) findViewById(R.id.loadingAnimation);
         liLayout = (RelativeLayout) findViewById(R.id.searchResltLayout);
@@ -80,17 +81,13 @@ public class SearchResultActivity extends AppCompatActivity {
         searchResultInforList = new ArrayList();
         Resources resources = this.getResources();
         dm = resources.getDisplayMetrics();
-        backButton.setOnClickListener(toolBarClickListener);
-        confirmButton.setOnClickListener(toolBarClickListener);
-        TextView titleView = (TextView) findViewById(R.id.searchResultTitleView);
-        Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/opensans.ttf");
-        titleView.setTypeface(tf);
-        setToolBarButtonSelector();
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             searchText = extras.getString("searchText");
             getInforFromWeb(searchText);
         }
+
+
     }
 
     Handler myHandler = new Handler(){
@@ -128,6 +125,7 @@ public class SearchResultActivity extends AppCompatActivity {
                 .header("Content-Type","application/json")
                 .addHeader("trakt-api-version","2")
                 .addHeader("trakt-api-key","1eb6e36ce7199d857bbaefbef849c3eee049727e67da910c9b45a2269ae13089")
+                .addHeader("Cache-Control","max-age=9600")
                 .build();
 
         mClient.newCall(request).enqueue(new Callback() {
@@ -162,48 +160,6 @@ public class SearchResultActivity extends AppCompatActivity {
         });
     }
 
-    private void setToolBarButtonSelector(){
-        backButton.setOnTouchListener(new ImageButton.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    backButton.setImageResource(R.mipmap.ic_back_selected);
-                }
-                else if(event.getAction() == MotionEvent.ACTION_UP){
-                    backButton.setImageResource(R.mipmap.ic_back);
-                }
-                return false;
-            }
-        });
-        confirmButton.setOnTouchListener(new ImageButton.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    confirmButton.setImageResource(R.mipmap.ic_confirm_selected);
-                }
-                else if(event.getAction() == MotionEvent.ACTION_UP){
-                    confirmButton.setImageResource(R.mipmap.ic_confirm);
-                }
-                return false;
-            }
-        });
-    }
-
-    View.OnClickListener toolBarClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.backButton:{
-                    SearchResultActivity.this.finish();
-                    break;
-                }
-                case R.id.confirmButton:{
-                    break;
-                }
-                default:break;
-            }
-        }
-    };
 
     public void parseInfor(String jsonString) {
         JSONArray jsonArray = JSONArray.parseArray(jsonString);
@@ -296,7 +252,7 @@ public class SearchResultActivity extends AppCompatActivity {
             }
 
             Picasso.with(SearchResultActivity.this)
-                    .load(imageUrl).placeholder(R.drawable.holdorerror)
+                    .load(imageUrl).placeholder(R.drawable.loading)
                     .error(R.drawable.holdorerror)
                     .resize(UnitConversion.dip2px(this,160f),UnitConversion.dip2px(this,90f))
                     .into(new Target() {
@@ -322,10 +278,11 @@ public class SearchResultActivity extends AppCompatActivity {
 
         }
         if(type == 0){
-            searchResultItem searchResultItem = new searchResultItem(SearchResultActivity.this);
+            searchResultItem searchResultItem = new searchResultItem(SearchResultActivity.this, searchResultActivityLayout.getHeight());
             searchResultItem.setTextViewText(name, status, overview, engname);
-            Picasso.with(SearchResultActivity.this).load(imageUrl).placeholder(R.drawable.holdorerror).error(R.drawable.holdorerror).resize(MainActivity.screenWidth, searchResultActivityLayout.getHeight()).centerCrop().into(searchResultItem.getImageView());
             liLayout.addView(searchResultItem);
+            Picasso.with(SearchResultActivity.this).load(imageUrl).error(R.drawable.holdorerror).resize(MainActivity.screenWidth, searchResultActivityLayout.getHeight()).centerCrop().into(searchResultItem.getImageView());
+
         }
     }
 
