@@ -1,9 +1,11 @@
 package com.sorry.stalker.activity;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Space;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -31,6 +34,7 @@ import com.sorry.stalker.datastructure.ShowsInfor;
 import com.sorry.stalker.tools.UnitConversion;
 import com.sorry.stalker.widget.SmallSearchResultItem;
 import com.sorry.stalker.widget.searchResultItem;
+import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -55,10 +59,12 @@ public class SearchResultActivity extends AppCompatActivity {
     private ScrollView searchResltList;
     private List searchResultInforList;
     private RelativeLayout liLayout;
+    private LinearLayout multiResultLayout;
     private LinearLayout searchResultActivityLayout;
     private GridLayout searchResultLayout;
     private DisplayMetrics dm;
     private SpinKitView loadingAnimation;
+    private Picasso picasso;
     protected static final int GUIUPDATEIDENTIFIER = 0x101;
     protected static final int UPDATEIDENTIFIER = 0x102;
     protected static final int NORESULTIDENTIFIER = 0x103;
@@ -73,22 +79,35 @@ public class SearchResultActivity extends AppCompatActivity {
         mClient = new OkHttpClient.Builder()
                 .cache(cache)
                 .build();
+        picasso = new Picasso.Builder(this.getBaseContext()).build();
         searchResltList = (ScrollView) findViewById(R.id.searchResltList);
         loadingAnimation = (SpinKitView) findViewById(R.id.loadingAnimation);
         liLayout = (RelativeLayout) findViewById(R.id.searchResltLayout);
-        searchResultLayout = (GridLayout) findViewById(R.id.searchResultListLayout);
+        multiResultLayout = (LinearLayout) findViewById(R.id.searchResltListLayout);
         searchResultActivityLayout = (LinearLayout) findViewById(R.id.searchResltActivityLayout);
+        backButton = (ImageButton) findViewById(R.id.searchActivityBackButton);
         searchResultInforList = new ArrayList();
         Resources resources = this.getResources();
         dm = resources.getDisplayMetrics();
         Bundle extras = getIntent().getExtras();
+        if(!isNetworkAvailable()){
+            Toast toast = Toast.makeText(getApplicationContext(), "请检查网络连接", Toast.LENGTH_SHORT);
+            toast.show();
+        }
         if (extras != null) {
             searchText = extras.getString("searchText");
             getInforFromWeb(searchText);
         }
-
+        backButton.setOnClickListener(backListener);
 
     }
+
+    View.OnClickListener backListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            SearchResultActivity.this.finish();
+        }
+    };
 
     Handler myHandler = new Handler(){
         public void handleMessage(Message msg) {
@@ -237,53 +256,50 @@ public class SearchResultActivity extends AppCompatActivity {
     public void updateUI(int type, String name, String engname, String status, String overview, String imageUrl) {
         if(type == 1) {
             final SmallSearchResultItem smallSearchResultItem = new SmallSearchResultItem(SearchResultActivity.this);
-            smallSearchResultItem.setName(name);
-            Space sp = new Space(this);
-            Space sp2 = new Space(this);
-            RelativeLayout.LayoutParams spacerp = new RelativeLayout.LayoutParams(((dm.widthPixels-2*UnitConversion.dip2px(this,160))/3),GridLayout.LayoutParams.WRAP_CONTENT);
-            RelativeLayout.LayoutParams spacerp2 = new RelativeLayout.LayoutParams(((dm.widthPixels-2*UnitConversion.dip2px(this,160))/6),GridLayout.LayoutParams.WRAP_CONTENT);
-            if(searchResultLayout.getChildCount()%2 == 0) {
-                sp.setLayoutParams(spacerp);
-                sp2.setLayoutParams(spacerp2);
-            }
-            else{
-                sp.setLayoutParams(spacerp2);
-                sp2.setLayoutParams(spacerp);
-            }
+            final Target mTarget = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom loadedFrom) {
+                    Log.d("DEBUG", "onBitmapLoaded");
+                    smallSearchResultItem.setImage(bitmap);
+                }
 
-            Picasso.with(SearchResultActivity.this)
-                    .load(imageUrl).placeholder(R.drawable.loading)
+                @Override
+                public void onBitmapFailed(Drawable drawable) {
+                    Log.d("DEBUG", "onBitmapFailed");
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable drawable) {
+                    Log.d("DEBUG", "onPrepareLoad");
+                }
+            };
+            smallSearchResultItem.setName(name).setEngName(engname).setInfor(status).setDetial(overview);
+            picasso.load(imageUrl)
+                    .config(Bitmap.Config.RGB_565)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
                     .error(R.drawable.holdorerror)
-                    .resize(UnitConversion.dip2px(this,160f),UnitConversion.dip2px(this,90f))
-                    .into(new Target() {
-                        @Override
-                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                            smallSearchResultItem.setImage(bitmap);
-
-                        }
-
-                        @Override
-                        public void onBitmapFailed(Drawable errorDrawable) {
-                            Log.i("faile","noimage");
-                        }
-
-                        @Override
-                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                        }
-                    });
-            searchResultLayout.addView(sp);
-            searchResultLayout.addView(smallSearchResultItem);
-            searchResultLayout.addView(sp2);
+                    .into(mTarget);
+            multiResultLayout.addView(smallSearchResultItem);
 
         }
         if(type == 0){
             searchResultItem searchResultItem = new searchResultItem(SearchResultActivity.this, searchResultActivityLayout.getHeight());
             searchResultItem.setTextViewText(name, status, overview, engname);
             liLayout.addView(searchResultItem);
-            Picasso.with(SearchResultActivity.this).load(imageUrl).error(R.drawable.holdorerror).resize(MainActivity.screenWidth, searchResultActivityLayout.getHeight()).centerCrop().into(searchResultItem.getImageView());
+            picasso.load(imageUrl).error(R.drawable.holdorerror).resize(MainActivity.screenWidth, searchResultActivityLayout.getHeight()).centerCrop().into(searchResultItem.getImageView());
 
         }
+    }
+
+    private boolean isNetworkAvailable() {
+
+        // 得到网络连接信息
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        // 去进行判断网络是否连接
+        if (manager.getActiveNetworkInfo() != null) {
+            return manager.getActiveNetworkInfo().isAvailable();
+        }
+        return false;
     }
 
 }

@@ -108,10 +108,10 @@
                     android:layout_height="22dp"
                     android:scaleType="centerInside"
                     android:background="@mipmap/ic_add_black"
-                    android:text="ADD    "
+                    android:text="ADD   "
                     android:textAlignment="viewEnd"
                     android:gravity="end|center_vertical"
-                    android:textSize="10sp"
+                    android:textSize="12sp"
                     android:textColor="@color/colorBlack"/>
 
             </LinearLayout>

@@ -8,7 +8,11 @@
     tools:context=".activity.SearchResultActivity"
     android:background="@color/colorBackground"
     >
-
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/search_result_background"
+        android:scaleType="centerCrop"/>
     <com.github.ybq.android.spinkit.SpinKitView
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/loadingAnimation"
@@ -18,14 +22,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        app:SpinKit_Color="@color/colorAccent" />
-
-
-
+        app:SpinKit_Color="@color/colorAccent"
+        android:background="@null"/>
+    <com.sorry.stalker.widget.SearchResultToolbar
+        android:id="@+id/search_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     <LinearLayout
         android:id="@+id/searchResltActivityLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/search_toolbar"
+        >
         <ScrollView
             android:id="@+id/searchResltList"
             android:layout_width="match_parent"
@@ -34,16 +42,14 @@
             <RelativeLayout
                 android:id="@+id/searchResltLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <GridLayout
-                    android:id="@+id/searchResultListLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:columnCount="6"
-                    android:gravity="center"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:id="@+id/searchResltListLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     >
-                    </GridLayout>
-
+                </LinearLayout>
             </RelativeLayout>
 
         </ScrollView>

@@ -1,5 +1,6 @@
 package com.sorry.stalker.widget;
 
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
@@ -36,6 +37,7 @@ import com.sorry.stalker.R;
 import com.sorry.stalker.activity.MainActivity;
 import com.sorry.stalker.tools.FastBlur;
 import com.sorry.stalker.tools.UnitConversion;
+
 
 
 public class searchResultItem extends LinearLayout{
@@ -89,7 +91,7 @@ public class searchResultItem extends LinearLayout{
 
 
 
-        selectScaleAnimation = new ScaleAnimation(1.0f, 1.2f, 1.0f, 1.2f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        selectScaleAnimation = new ScaleAnimation(1.0f, 1.1f, 1.0f, 1.1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         selectScaleAnimation.setDuration(120);//设置动画持续时间
         selectScaleAnimation.setRepeatCount(1);//设置重复次数
         selectScaleAnimation.setFillAfter(true);
@@ -115,19 +117,7 @@ public class searchResultItem extends LinearLayout{
 
         Resources resources = this.getResources();
         dm = resources.getDisplayMetrics();
-         /*
-        LinearLayout.LayoutParams newLp = new LinearLayout.LayoutParams(dm.widthPixels, UnitConversion.dip2px(this.getContext(),200));
-        RelativeLayout.LayoutParams newRp = new RelativeLayout.LayoutParams(dm.widthPixels,UnitConversion.dip2px(this.getContext(),200));
-        first.setLayoutParams(newLp);
-        second.setLayoutParams(newLp);
-        relayout.setLayoutParams(newRp);*/
-        /*
-        TextPaint nameTp = name.getPaint();
-        nameTp.setFakeBoldText(true);
-        TextPaint inforTp = infor.getPaint();
-        inforTp.setFakeBoldText(true);绿箭侠
-        TextPaint detialTp = detial.getPaint();
-        detialTp.setFakeBoldText(true);*/
+
         checkBoxButton.setOnClickListener(checkBoxListener);
 
         image.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -141,22 +131,23 @@ public class searchResultItem extends LinearLayout{
                 }
             }
         });
-
-
-
-    }
+}
 
     private OnClickListener checkBoxListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
             if(!isSelected) {
                 isSelected = true;
-
+                checkBoxButton.startAnimation(selectAnimation);
+                checkBoxButton.setBackgroundResource(R.mipmap.ic_add_red);
+                checkBoxButton.setTextColor(getResources().getColor(R.color.colorWhite));
                 image.startAnimation(selectImgScaleAnimation);
             }
             else{
                 isSelected = false;
-
+                checkBoxButton.startAnimation(selectAnimation);
+                checkBoxButton.setBackgroundResource(R.mipmap.ic_add_black);
+                checkBoxButton.setTextColor(getResources().getColor(R.color.colorBlack));
                 image.startAnimation(selectImgScaleAnimation);
 
             }

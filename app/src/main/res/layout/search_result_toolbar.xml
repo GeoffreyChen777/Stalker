@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="@color/colorBlack"
+    android:layout_marginTop="8dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:gravity="center_vertical"
+    >
+    <ImageButton
+        android:id="@+id/searchActivityBackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:background="@null"
+        android:src="@mipmap/ic_back_re"/>
+    <TextView
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:text="RESULT"
+        android:textSize="18sp"
+        android:textColor="@color/colorBlack"
+        android:textStyle="bold"
+        android:background="@color/colorWhite"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+    <ImageButton
+        android:id="@+id/searchActivityAddButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="@null"
+        android:src="@mipmap/ic_add_re"/>
+
+</RelativeLayout>
