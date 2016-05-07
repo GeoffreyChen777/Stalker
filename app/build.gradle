@@ -29,7 +29,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.lapism:searchview:2.2'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
-    compile 'com.github.ybq:Android-SpinKit:1.0.3'
+    compile 'com.wang.avi:library:1.0.5'
+    compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.7.4'
     compile files('libs/fastjson-1.1.49.android.jar')

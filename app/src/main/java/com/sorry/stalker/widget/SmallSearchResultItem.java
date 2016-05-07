@@ -10,6 +10,8 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 
 import com.sorry.stalker.R;
 import com.sorry.stalker.tools.UnitConversion;
+import com.squareup.picasso.Target;
 
 public class SmallSearchResultItem extends RelativeLayout {
     private TextView name;
@@ -56,7 +59,7 @@ public class SmallSearchResultItem extends RelativeLayout {
         addButton.setOnClickListener(addListener);
         Resources resources = this.getResources();
         dm = resources.getDisplayMetrics();
-        LinearLayout.LayoutParams newLp = new LinearLayout.LayoutParams(dm.widthPixels - UnitConversion.dip2px(this.getContext(),16), UnitConversion.dip2px(this.getContext(),190));
+        LinearLayout.LayoutParams newLp = new LinearLayout.LayoutParams(dm.widthPixels - UnitConversion.dip2px(this.getContext(),16), UnitConversion.dip2px(this.getContext(),170));
         firstPage.setLayoutParams(newLp);
         secondPage.setLayoutParams(newLp);
         showDetialButton.setOnClickListener(showDetialListener);
@@ -102,11 +105,21 @@ public class SmallSearchResultItem extends RelativeLayout {
     OnClickListener addListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
+            final ScaleAnimation selectImgScaleAnimation = new ScaleAnimation(1.0f, 1.05f, 1.0f, 1.05f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            selectImgScaleAnimation.setDuration(120);//设置动画持续时间
+            selectImgScaleAnimation.setRepeatCount(1);//设置重复次数
+            selectImgScaleAnimation.setFillAfter(true);
+            selectImgScaleAnimation.setFillEnabled(true);
+            selectImgScaleAnimation.setRepeatMode(Animation.REVERSE);
             if(isSelected){
                 isSelected = false;
+                addButton.setBackgroundResource(R.mipmap.ic_small_add_unselect);
+                image.startAnimation(selectImgScaleAnimation);
             }
             else{
                 isSelected = true;
+                addButton.setBackgroundResource(R.mipmap.ic_add_red);
+                image.startAnimation(selectImgScaleAnimation);
             }
         }
     };
@@ -137,6 +150,11 @@ public class SmallSearchResultItem extends RelativeLayout {
 
     public SmallSearchResultItem setImage(Bitmap bmp){
         this.image.setImageBitmap(bmp);
+        return this;
+    }
+
+    public SmallSearchResultItem setTag(Target target){
+        this.image.setTag(target);
         return this;
     }
 

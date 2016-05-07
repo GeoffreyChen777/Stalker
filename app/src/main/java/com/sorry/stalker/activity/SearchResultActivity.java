@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -28,15 +29,16 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.github.ybq.android.spinkit.SpinKitView;
 import com.sorry.stalker.R;
 import com.sorry.stalker.datastructure.ShowsInfor;
 import com.sorry.stalker.tools.UnitConversion;
+import com.sorry.stalker.widget.SearchResultToolbar;
 import com.sorry.stalker.widget.SmallSearchResultItem;
 import com.sorry.stalker.widget.searchResultItem;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,9 +63,11 @@ public class SearchResultActivity extends AppCompatActivity {
     private RelativeLayout liLayout;
     private LinearLayout multiResultLayout;
     private LinearLayout searchResultActivityLayout;
+    private RelativeLayout searchResultToolbarLayout;
+    private SearchResultToolbar searchResultToolbar;
     private GridLayout searchResultLayout;
     private DisplayMetrics dm;
-    private SpinKitView loadingAnimation;
+    private AVLoadingIndicatorView loadingAnimation;
     private Picasso picasso;
     protected static final int GUIUPDATEIDENTIFIER = 0x101;
     protected static final int UPDATEIDENTIFIER = 0x102;
@@ -81,11 +85,13 @@ public class SearchResultActivity extends AppCompatActivity {
                 .build();
         picasso = new Picasso.Builder(this.getBaseContext()).build();
         searchResltList = (ScrollView) findViewById(R.id.searchResltList);
-        loadingAnimation = (SpinKitView) findViewById(R.id.loadingAnimation);
+        loadingAnimation = (AVLoadingIndicatorView) findViewById(R.id.avloadingIndicatorView);
         liLayout = (RelativeLayout) findViewById(R.id.searchResltLayout);
         multiResultLayout = (LinearLayout) findViewById(R.id.searchResltListLayout);
         searchResultActivityLayout = (LinearLayout) findViewById(R.id.searchResltActivityLayout);
         backButton = (ImageButton) findViewById(R.id.searchActivityBackButton);
+        searchResultToolbarLayout = (RelativeLayout) findViewById(R.id.searchResultToolbar);
+        searchResultToolbar = (SearchResultToolbar) findViewById(R.id.search_toolbar);
         searchResultInforList = new ArrayList();
         Resources resources = this.getResources();
         dm = resources.getDisplayMetrics();
@@ -222,10 +228,6 @@ public class SearchResultActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(Call call, final Response response) throws IOException {
-                        if (!response.isSuccessful()) {
-                            Log.i("Stalker", "Unexpected code " + response);
-                            throw new IOException("Unexpected code " + response);
-                        }
                         if (response.isSuccessful()) {
                             String text = response.body().string();
 
@@ -255,6 +257,7 @@ public class SearchResultActivity extends AppCompatActivity {
 
     public void updateUI(int type, String name, String engname, String status, String overview, String imageUrl) {
         if(type == 1) {
+            searchResultToolbar.setVisibility(View.VISIBLE);
             final SmallSearchResultItem smallSearchResultItem = new SmallSearchResultItem(SearchResultActivity.this);
             final Target mTarget = new Target() {
                 @Override
@@ -273,12 +276,15 @@ public class SearchResultActivity extends AppCompatActivity {
                     Log.d("DEBUG", "onPrepareLoad");
                 }
             };
+            smallSearchResultItem.setTag(mTarget);
             smallSearchResultItem.setName(name).setEngName(engname).setInfor(status).setDetial(overview);
-            picasso.load(imageUrl)
-                    .config(Bitmap.Config.RGB_565)
-                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
-                    .error(R.drawable.holdorerror)
-                    .into(mTarget);
+            if(imageUrl != null) {
+                picasso.load(imageUrl)
+                        .config(Bitmap.Config.RGB_565)
+                        .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                        .error(R.drawable.holdorerror)
+                        .into(mTarget);
+            }
             multiResultLayout.addView(smallSearchResultItem);
 
         }

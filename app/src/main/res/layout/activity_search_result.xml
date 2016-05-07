@@ -13,21 +13,20 @@
         android:layout_height="match_parent"
         android:src="@drawable/search_result_background"
         android:scaleType="centerCrop"/>
-    <com.github.ybq.android.spinkit.SpinKitView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/loadingAnimation"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        style="@style/SpinKitView.Circle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        app:SpinKit_Color="@color/colorAccent"
-        android:background="@null"/>
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/avloadingIndicatorView"
+        android:layout_centerInParent="true"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:visibility="visible"
+        app:indicator="LineScalePulseOutRapid"
+        app:indicator_color="@color/colorWhite"
+    />
     <com.sorry.stalker.widget.SearchResultToolbar
         android:id="@+id/search_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
     <LinearLayout
         android:id="@+id/searchResltActivityLayout"
         android:layout_width="match_parent"
@@ -38,16 +37,19 @@
             android:id="@+id/searchResltList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="none">
+            android:scrollbars="none"
+            android:background="@null">
             <RelativeLayout
                 android:id="@+id/searchResltLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@null">
                 <LinearLayout
                     android:id="@+id/searchResltListLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    android:background="@null"
                     >
                 </LinearLayout>
             </RelativeLayout>

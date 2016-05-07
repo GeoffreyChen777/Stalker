@@ -5,10 +5,12 @@
     android:layout_height="48dp"
     android:background="@color/colorBlack"
     android:layout_marginTop="8dp"
-    android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
     android:gravity="center_vertical"
+    android:id="@+id/searchResultToolbar"
     >
+
     <ImageButton
         android:id="@+id/searchActivityBackButton"
         android:layout_width="wrap_content"
@@ -18,6 +20,7 @@
         android:background="@null"
         android:src="@mipmap/ic_back_re"/>
     <TextView
+        android:id="@+id/resultTextview"
         android:layout_width="80dp"
         android:layout_height="30dp"
         android:text="RESULT"
