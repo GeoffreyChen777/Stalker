@@ -9,9 +9,10 @@
     android:background="@color/colorBackground"
     >
     <ImageView
+        android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/search_result_background"
+        android:src="@color/colorItemBackground"
         android:scaleType="centerCrop"/>
     <com.wang.avi.AVLoadingIndicatorView
         android:id="@+id/avloadingIndicatorView"

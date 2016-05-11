@@ -1,6 +1,9 @@
 package com.sorry.stalker.activity;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
@@ -10,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -20,6 +24,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -41,6 +46,7 @@ import com.squareup.picasso.Target;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,15 +63,15 @@ public class SearchResultActivity extends AppCompatActivity {
     private String searchText;
     private OkHttpClient mClient;
     private ImageButton backButton;
-    private ImageButton confirmButton;
+    private ImageButton addButton;
+    private ImageView background;
     private ScrollView searchResltList;
-    private List searchResultInforList;
+    private List<ShowsInfor> searchResultInforList;
     private RelativeLayout liLayout;
     private LinearLayout multiResultLayout;
     private LinearLayout searchResultActivityLayout;
     private RelativeLayout searchResultToolbarLayout;
     private SearchResultToolbar searchResultToolbar;
-    private GridLayout searchResultLayout;
     private DisplayMetrics dm;
     private AVLoadingIndicatorView loadingAnimation;
     private Picasso picasso;
@@ -73,11 +79,15 @@ public class SearchResultActivity extends AppCompatActivity {
     protected static final int UPDATEIDENTIFIER = 0x102;
     protected static final int NORESULTIDENTIFIER = 0x103;
     protected static final int UPDATESINGLEIDENTIFIER = 0x104;
+    protected static final int NORMAL_RESULT = 0x10;
+    protected static final int SMALL_RESULT = 0x11;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_result);
+        searchResultInforList = new ArrayList();
+        searchResultInforList.clear();
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
         Cache cache = new Cache(this.getCacheDir(), cacheSize);
         mClient = new OkHttpClient.Builder()
@@ -90,9 +100,12 @@ public class SearchResultActivity extends AppCompatActivity {
         multiResultLayout = (LinearLayout) findViewById(R.id.searchResltListLayout);
         searchResultActivityLayout = (LinearLayout) findViewById(R.id.searchResltActivityLayout);
         backButton = (ImageButton) findViewById(R.id.searchActivityBackButton);
+        addButton = (ImageButton) findViewById(R.id.searchActivityAddButton);
         searchResultToolbarLayout = (RelativeLayout) findViewById(R.id.searchResultToolbar);
         searchResultToolbar = (SearchResultToolbar) findViewById(R.id.search_toolbar);
-        searchResultInforList = new ArrayList();
+        background = (ImageView) findViewById(R.id.background);
+
+
         Resources resources = this.getResources();
         dm = resources.getDisplayMetrics();
         Bundle extras = getIntent().getExtras();
@@ -105,7 +118,7 @@ public class SearchResultActivity extends AppCompatActivity {
             getInforFromWeb(searchText);
         }
         backButton.setOnClickListener(backListener);
-
+        addButton.setOnClickListener(addListener);
     }
 
     View.OnClickListener backListener = new View.OnClickListener() {
@@ -130,13 +143,13 @@ public class SearchResultActivity extends AppCompatActivity {
                 case UPDATESINGLEIDENTIFIER: {
                     loadingAnimation.setVisibility(View.GONE);
                     ShowsInfor infor = (ShowsInfor) msg.obj;
-                    updateUI(0, infor.name, infor.engname, infor.status, infor.overview, infor.posterImgUrl);
+                    updateUI(0, infor);
                     break;
                 }
                 case UPDATEIDENTIFIER:{
                     loadingAnimation.setVisibility(View.GONE);
                     ShowsInfor infor = (ShowsInfor) msg.obj;
-                    updateUI(1, infor.name, infor.engname, infor.status, infor.overview, infor.imgUrl);
+                    updateUI(1, infor);
                     break;
                 }
             }
@@ -255,10 +268,12 @@ public class SearchResultActivity extends AppCompatActivity {
 
     }
 
-    public void updateUI(int type, String name, String engname, String status, String overview, String imageUrl) {
+    public void updateUI(int type, final ShowsInfor infor) {
+        background.setImageResource(R.drawable.search_result_background);
         if(type == 1) {
             searchResultToolbar.setVisibility(View.VISIBLE);
             final SmallSearchResultItem smallSearchResultItem = new SmallSearchResultItem(SearchResultActivity.this);
+            smallSearchResultItem.showsInfor = infor;
             final Target mTarget = new Target() {
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom loadedFrom) {
@@ -277,24 +292,81 @@ public class SearchResultActivity extends AppCompatActivity {
                 }
             };
             smallSearchResultItem.setTag(mTarget);
-            smallSearchResultItem.setName(name).setEngName(engname).setInfor(status).setDetial(overview);
-            if(imageUrl != null) {
-                picasso.load(imageUrl)
+            smallSearchResultItem.setName(infor.name).setEngName(infor.engname).setInfor(infor.status).setDetial(infor.overview);
+            if(infor.imgUrl != null) {
+                picasso.load(infor.imgUrl)
                         .config(Bitmap.Config.RGB_565)
                         .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
                         .error(R.drawable.holdorerror)
                         .into(mTarget);
+                smallSearchResultItem.showMask();
             }
+            smallSearchResultItem.setOnSelectActionListener(new SmallSearchResultItem.OnSelectListener() {
+                @Override
+                public void select() {
+                    if(smallSearchResultItem.isSelected()){
+                        searchResultInforList.add(smallSearchResultItem.showsInfor);
+                    }
+                    else {
+                        searchResultInforList.remove(smallSearchResultItem.showsInfor);
+                    }
+                }
+            });
             multiResultLayout.addView(smallSearchResultItem);
-
         }
         if(type == 0){
-            searchResultItem searchResultItem = new searchResultItem(SearchResultActivity.this, searchResultActivityLayout.getHeight());
-            searchResultItem.setTextViewText(name, status, overview, engname);
+            final searchResultItem searchResultItem = new searchResultItem(SearchResultActivity.this, searchResultActivityLayout.getHeight());
+            searchResultItem.setTextViewText(infor.name, infor.status, infor.overview, infor.engname);
             liLayout.addView(searchResultItem);
-            picasso.load(imageUrl).error(R.drawable.holdorerror).resize(MainActivity.screenWidth, searchResultActivityLayout.getHeight()).centerCrop().into(searchResultItem.getImageView());
+            picasso.load(infor.posterImgUrl).error(R.drawable.holdorerror).resize(MainActivity.screenWidth, searchResultActivityLayout.getHeight()).centerCrop().into(searchResultItem.getImageView());
 
+            findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (searchResultItem.isSelected()) {
+                        searchResultInforList.add(infor);
+                        dialog(searchResultInforList);
+                    } else
+                        SearchResultActivity.this.finish();
+                }
+            });
         }
+    }
+
+    private View.OnClickListener addListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(searchResultInforList.size() != 0) {
+                dialog(searchResultInforList);
+            }
+            else
+            {
+                Toast.makeText(SearchResultActivity.this, "请选择ADD后添加！" , Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    private void dialog(final List<ShowsInfor> showlist){
+        AlertDialog.Builder builder = new AlertDialog.Builder(SearchResultActivity.this);
+        builder.setTitle("确认添加?");
+        builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                Intent intent=new Intent();
+                intent.setClass(SearchResultActivity.this, MainActivity.class);
+                intent.putExtra("Result", (Serializable)searchResultInforList);
+                setResult(NORMAL_RESULT, intent);
+                SearchResultActivity.this.finish();
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
     }
 
     private boolean isNetworkAvailable() {

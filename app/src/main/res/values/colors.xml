@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorPrimary">#2a2a2a</color>
+    <color name="colorPrimary">#ffffff</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#aaaaaa</color>
-    <color name="colorLine">#222222</color>
+    <color name="colorLine">#bfbfbf</color>
     <color name="colorImageMask">#6f000000</color>
-    <color name="colorName">#efefef</color>
-    <color name="colorBackground">#101010</color>
-    <color name="colorItemBackground">#222222</color>
+    <color name="colorMainImageMaskDark">#be000000</color>
+    <color name="colorMainImageMask">#56000000</color>
+    <color name="colorName">#ffffff</color>
+    <color name="colorBackground">#eae9e9</color>
+    <color name="colorItemBackground">#131313</color>
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#fff</color>
     <color name="colorBule">#6291f5</color>

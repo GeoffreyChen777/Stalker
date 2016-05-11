@@ -6,60 +6,50 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".activity.MainActivity">
-    <android.support.v7.widget.Toolbar
+    <com.sorry.stalker.widget.MainToolBar
         android:id="@+id/toolbar"
-        android:layout_height="?attr/actionBarSize"
         android:layout_width="match_parent"
-        android:background="@color/colorPrimary"
-        app:contentInsetEnd="0dp"
-        app:contentInsetLeft="0dp"
-        app:contentInsetRight="0dp"
-        app:contentInsetStart="0dp">
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            >
-        <android.support.v7.widget.AppCompatImageButton
-            android:id="@+id/menuButton"
-            android:layout_centerVertical="true"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:scaleType="centerInside"
-            android:background="?android:attr/selectableItemBackground"
-            android:src="@mipmap/ic_menu"
-            />
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/titleView"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textColor="@color/colorAccent"
-            android:gravity="center"
-            android:textSize="24sp"/>
+        android:layout_height="wrap_content">
 
-        <android.support.v7.widget.AppCompatImageButton
-            android:id="@+id/addMenu"
-            android:layout_centerVertical="true"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:scaleType="centerInside"
-            android:background="?android:attr/selectableItemBackground"
-            android:src="@mipmap/ic_add"
-            />
-        </RelativeLayout>
-    </android.support.v7.widget.Toolbar>
+    </com.sorry.stalker.widget.MainToolBar>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/colorLine"
         android:layout_below="@id/toolbar"/>
+
+    <in.srain.cube.views.ptr.PtrClassicFrameLayout
+        android:id="@+id/store_house_ptr_frame"
+        xmlns:cube_ptr="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        cube_ptr:ptr_resistance="1.7"
+        cube_ptr:ptr_ratio_of_header_height_to_refresh="1.2"
+        cube_ptr:ptr_duration_to_close="300"
+        cube_ptr:ptr_duration_to_close_header="2000"
+        cube_ptr:ptr_keep_header_when_refresh="true"
+        cube_ptr:ptr_pull_to_fresh="false"
+        android:layout_below="@id/toolbar"
+        >
+        <ScrollView
+            android:id="@+id/selectListScroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none"
+            android:background="@null"
+            android:layout_below="@id/toolbar"
+            >
+                <LinearLayout
+                    android:id="@+id/selectedListLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@null"
+                    >
+                </LinearLayout>
+        </ScrollView>
+    </in.srain.cube.views.ptr.PtrClassicFrameLayout>
     <com.lapism.searchview.view.SearchView
         android:id="@+id/searchView"
         android:layout_width="match_parent"

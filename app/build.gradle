@@ -34,4 +34,5 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.7.4'
     compile files('libs/fastjson-1.1.49.android.jar')
+    compile 'in.srain.cube:ultra-ptr:1.0.11'
 }

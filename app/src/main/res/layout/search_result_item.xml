@@ -9,12 +9,20 @@
     android:background="@drawable/loading"
     >
 
+
+
     <ImageView
         android:id="@+id/image"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         />
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:src="@mipmap/ic_back_re"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -117,4 +125,4 @@
             </LinearLayout>
     </FrameLayout>
 
-    </RelativeLayout>
+</RelativeLayout>

@@ -19,6 +19,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sorry.stalker.R;
+import com.sorry.stalker.activity.SearchResultActivity;
+import com.sorry.stalker.datastructure.ShowsInfor;
 import com.sorry.stalker.tools.UnitConversion;
 import com.squareup.picasso.Target;
 
@@ -36,6 +38,8 @@ public class SmallSearchResultItem extends RelativeLayout {
     private ObservableHorizontalScrollView scrollView;
     private DisplayMetrics dm;
     private boolean isSelected;
+    public ShowsInfor showsInfor;
+    private OnSelectListener mListener = null;
 
     public SmallSearchResultItem(Context context) {
         this(context, null);
@@ -56,6 +60,7 @@ public class SmallSearchResultItem extends RelativeLayout {
         showDetialButton = (ImageButton) findViewById(R.id.showDetialButton);
         scrollView = (ObservableHorizontalScrollView) findViewById(R.id.hscrollView);
         isSelected = false;
+        showsInfor = null;
         addButton.setOnClickListener(addListener);
         Resources resources = this.getResources();
         dm = resources.getDisplayMetrics();
@@ -121,6 +126,7 @@ public class SmallSearchResultItem extends RelativeLayout {
                 addButton.setBackgroundResource(R.mipmap.ic_add_red);
                 image.startAnimation(selectImgScaleAnimation);
             }
+            mListener.select();
         }
     };
 
@@ -156,6 +162,19 @@ public class SmallSearchResultItem extends RelativeLayout {
     public SmallSearchResultItem setTag(Target target){
         this.image.setTag(target);
         return this;
+    }
+
+    public SmallSearchResultItem showMask(){
+        findViewById(R.id.small_mask).setVisibility(View.VISIBLE);
+        return this;
+    }
+
+    public void setOnSelectActionListener(OnSelectListener listener) {
+        mListener = listener;
+    }
+
+    public interface OnSelectListener {
+        public void select();
     }
 
 }
