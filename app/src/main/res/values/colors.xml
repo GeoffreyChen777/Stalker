@@ -13,6 +13,7 @@
     <color name="colorItemBackground">#131313</color>
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#fff</color>
-    <color name="colorBule">#6291f5</color>
+    <color name="colorf8f4e8">#f8f4e8</color>
+    <color name="colorAA">#181818</color>
     <color name="colorTransparent">#00000000</color>
 </resources>

@@ -297,7 +297,7 @@ public class SearchResultActivity extends AppCompatActivity {
                 picasso.load(infor.imgUrl)
                         .config(Bitmap.Config.RGB_565)
                         .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
-                        .error(R.drawable.holdorerror)
+                        .error(R.drawable.hold)
                         .into(mTarget);
                 smallSearchResultItem.showMask();
             }
@@ -318,7 +318,7 @@ public class SearchResultActivity extends AppCompatActivity {
             final searchResultItem searchResultItem = new searchResultItem(SearchResultActivity.this, searchResultActivityLayout.getHeight());
             searchResultItem.setTextViewText(infor.name, infor.status, infor.overview, infor.engname);
             liLayout.addView(searchResultItem);
-            picasso.load(infor.posterImgUrl).error(R.drawable.holdorerror).resize(MainActivity.screenWidth, searchResultActivityLayout.getHeight()).centerCrop().into(searchResultItem.getImageView());
+            picasso.load(infor.posterImgUrl).error(R.drawable.hold).resize(MainActivity.screenWidth, searchResultActivityLayout.getHeight()).centerCrop().into(searchResultItem.getImageView());
 
             findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
                 @Override

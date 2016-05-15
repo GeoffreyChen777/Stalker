@@ -10,6 +10,7 @@ import java.io.Serializable;
  */
 public class ShowsInfor implements Serializable {
     public String ID;
+    public String mazeID;
     public String name;
     public String engname;
     public String status;
@@ -23,6 +24,7 @@ public class ShowsInfor implements Serializable {
 
     public ShowsInfor() {
         ID = "";
+        mazeID = "";
         name = "";
         engname = "";
         status = "";

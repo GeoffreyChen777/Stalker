@@ -24,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
 
-        cube_ptr:ptr_resistance="1.7"
+        cube_ptr:ptr_resistance="1.5"
         cube_ptr:ptr_ratio_of_header_height_to_refresh="1.2"
         cube_ptr:ptr_duration_to_close="300"
         cube_ptr:ptr_duration_to_close_header="2000"
@@ -39,6 +39,7 @@
             android:scrollbars="none"
             android:background="@null"
             android:layout_below="@id/toolbar"
+            android:overScrollMode="never"
             >
                 <LinearLayout
                     android:id="@+id/selectedListLayout"
@@ -47,6 +48,54 @@
                     android:orientation="vertical"
                     android:background="@null"
                     >
+                    <com.sorry.stalker.widget.MainItemLayout
+                        android:id="@+id/zeroDay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </com.sorry.stalker.widget.MainItemLayout>
+                    <com.sorry.stalker.widget.MainItemLayout
+                        android:id="@+id/oneDay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </com.sorry.stalker.widget.MainItemLayout>
+                    <com.sorry.stalker.widget.MainItemLayout
+                        android:id="@+id/twoDay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </com.sorry.stalker.widget.MainItemLayout>
+                    <com.sorry.stalker.widget.MainItemLayout
+                        android:id="@+id/threeDay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </com.sorry.stalker.widget.MainItemLayout>
+                    <com.sorry.stalker.widget.MainItemLayout
+                        android:id="@+id/fourDay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </com.sorry.stalker.widget.MainItemLayout>
+                    <com.sorry.stalker.widget.MainItemLayout
+                        android:id="@+id/fiveDay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </com.sorry.stalker.widget.MainItemLayout>
+                    <com.sorry.stalker.widget.MainItemLayout
+                        android:id="@+id/sixDay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </com.sorry.stalker.widget.MainItemLayout>
+                    <com.sorry.stalker.widget.MainItemLayout
+                        android:id="@+id/NotReturning"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </com.sorry.stalker.widget.MainItemLayout>
                 </LinearLayout>
         </ScrollView>
     </in.srain.cube.views.ptr.PtrClassicFrameLayout>

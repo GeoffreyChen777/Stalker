@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -22,6 +23,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -48,6 +51,9 @@ import in.srain.cube.views.ptr.PtrHandler;
 import in.srain.cube.views.ptr.header.MaterialHeader;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+
+import com.sorry.stalker.widget.MainItemLayout;
+import com.sorry.stalker.widget.MainToolBar;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -73,12 +79,22 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<ShowsInfor> newList;
     private LinearLayout selectedListLayout;
     private ScrollView selectedScrollLayout;
+    private MainToolBar mainToolBar;
     private PtrFrameLayout ptrFrame;
     private OkHttpClient mClient;
     protected static int screenWidth;
-    protected final int ADDVIEW = 0x0;
+    protected final int NONET = 0x0;
     protected final int SEARCH = 1;
     private Picasso picasso;
+    private MainItemLayout zeroDaylayout;
+    private MainItemLayout oneDaylayout;
+    private MainItemLayout twoDaylayout;
+    private MainItemLayout threeDaylayout;
+    private MainItemLayout fourDaylayout;
+    private MainItemLayout fiveDaylayout;
+    private MainItemLayout sixDaylayout;
+    private MainItemLayout notReturningDaylayout;
+    private ArrayList<MainItemLayout> mainItemLayoutArray;
 
 
     @Override
@@ -97,8 +113,32 @@ public class MainActivity extends AppCompatActivity {
         newList = getData();
         mClient = new OkHttpClient();
         picasso = new Picasso.Builder(this.getBaseContext()).build();
+
+        mainToolBar = (MainToolBar) findViewById(R.id.toolbar);
+
         selectedListLayout = (LinearLayout) findViewById(R.id.selectedListLayout);
         selectedScrollLayout = (ScrollView) findViewById(R.id.selectListScroll);
+        mainToolBar.ScrolltoTop(selectedScrollLayout);
+        zeroDaylayout = (MainItemLayout) findViewById(R.id.zeroDay);
+        oneDaylayout = (MainItemLayout) findViewById(R.id.oneDay);
+        twoDaylayout = (MainItemLayout) findViewById(R.id.twoDay);
+        threeDaylayout = (MainItemLayout) findViewById(R.id.threeDay);
+        fourDaylayout = (MainItemLayout) findViewById(R.id.fourDay);
+        fiveDaylayout = (MainItemLayout) findViewById(R.id.fiveDay);
+        sixDaylayout = (MainItemLayout) findViewById(R.id.sixDay);
+        notReturningDaylayout = (MainItemLayout) findViewById(R.id.NotReturning);
+        setDate();
+        notReturningDaylayout.setDayNum("Not Airing");
+        mainItemLayoutArray = new ArrayList<>();
+        mainItemLayoutArray.add(zeroDaylayout);
+        mainItemLayoutArray.add(oneDaylayout);
+        mainItemLayoutArray.add(twoDaylayout);
+        mainItemLayoutArray.add(threeDaylayout);
+        mainItemLayoutArray.add(fourDaylayout);
+        mainItemLayoutArray.add(fiveDaylayout);
+        mainItemLayoutArray.add(sixDaylayout);
+        mainItemLayoutArray.add(notReturningDaylayout);
+
         mSearchView = (SearchView)findViewById(R.id.searchView);
         mSearchView.setVersion(SearchCodes.VERSION_MENU_ITEM);
         mSearchView.setStyle(SearchCodes.STYLE_MENU_ITEM_CLASSIC);
@@ -145,24 +185,54 @@ public class MainActivity extends AppCompatActivity {
         ptrFrame.setDurationToCloseHeader(800);
         ptrFrame.setHeaderView(header);
         ptrFrame.addPtrUIHandler(header);
+        ptrFrame.setPinContent(true);
         ptrFrame.setPtrHandler(new PtrHandler() {
             @Override
             public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
-                return PtrDefaultHandler.checkContentCanBePulledDown(frame, content, header);
+                return (PtrDefaultHandler.checkContentCanBePulledDown(frame, content, header));
+
             }
 
             @Override
             public void onRefreshBegin(PtrFrameLayout frame) {
-                RefreshUI();
-                /*ptrFrame.postDelayed(new Runnable() {
+                ptrFrame.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        //ptrFrame.refreshComplete();
+                        setDate();
+                        RefreshUI();
                     }
-                }, 1500);*/
+                }, 800);
+
+
+
             }
         });
 
+    }
+
+    public void setDate(){
+        String[] Week = {"Saturday","Sunday","Monday","Tuesday","Wednesday","Thursday","Friday"};
+        final Calendar c = Calendar.getInstance();
+        c.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+        int SmWay = c.get(Calendar.DAY_OF_WEEK);
+        zeroDaylayout.setDayNum("Today");
+        oneDaylayout.setDayNum("Tomorrow");
+        twoDaylayout.setDayNum(Week[(SmWay+2)%7]);
+        threeDaylayout.setDayNum(Week[(SmWay+3)%7]);
+        fourDaylayout.setDayNum(Week[(SmWay+4)%7]);
+        fiveDaylayout.setDayNum(Week[(SmWay+5)%7]);
+        sixDaylayout.setDayNum(Week[(SmWay+6)%7]);
+    }
+
+    private boolean isNetworkAvailable() {
+
+        // 得到网络连接信息
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        // 去进行判断网络是否连接
+        if (manager.getActiveNetworkInfo() != null) {
+            return manager.getActiveNetworkInfo().isAvailable();
+        }
+        return false;
     }
 
     @Override
@@ -186,119 +256,101 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void UpdateUI(){
-        Log.i("UpdfateUI",newList.size()+"");
-        for(int i =0; i < newList.size(); i++) {
-            MainItem item = new MainItem(this);
-            ShowsInfor infor = newList.get(i);
-            item.setName(infor.name).setEngName(infor.engname).setStatus(infor.status).setShowInfor(infor);
-            picasso.load(infor.imgUrl)
-                    .config(Bitmap.Config.RGB_565)
-                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
-                    .into(item.getImageView());
-            selectedList.add(newList.get(i));
-            item.getDataFromServer(mClient);
-            item.dayNum.addTextChangedListener(new TextWatcherWithItem(item) {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        if(isNetworkAvailable()) {
+            for (int i = 0; i < newList.size(); i++) {
+                MainItem item = new MainItem(this);
+                ShowsInfor infor = newList.get(i);
+                item.setName(infor.name).setEngName(infor.engname).setStatus(infor.status).setShowInfor(infor);
+                picasso.load(infor.imgUrl)
+                        .config(Bitmap.Config.RGB_565)
+                        .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                        .into(item.getImageView());
+                selectedList.add(newList.get(i));
+                item.getDataFromServer(mClient);
+                item.status.addTextChangedListener(new TextWatcherWithItem(item) {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                }
+                    }
 
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                }
+                    }
 
-                @Override
-                public void afterTextChanged(Editable s) {
-                    sortAdd(getItem());
-                }
-            });
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        sortAdd(getItem());
+                    }
+                });
 
+            }
+        }else{
+            Message message = new Message();
+            message.what = NONET;
+            mainHandler.sendMessage(message);
+            for (int i = 0; i < newList.size(); i++) {
+                MainItem item = new MainItem(this);
+                ShowsInfor infor = newList.get(i);
+                item.setName(infor.name).setEngName(infor.engname).setStatus(infor.status).setStatus(infor.status+" S"+infor.airedSeason+" E"+infor.airedEpisodeNumber).setDayNum(infor.airDate).setShowInfor(infor);
+                picasso.load(infor.imgUrl)
+                        .config(Bitmap.Config.RGB_565)
+                        .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                        .into(item.getImageView());
+                sortAdd(item);
+            }
         }
     }
 
     private void RefreshUI(){
-        selectedListLayout.removeAllViews();
-        for(int i =0; i < selectedList.size(); i++) {
-            MainItem item = new MainItem(this);
-            ShowsInfor infor = selectedList.get(i);
-            item.setName(infor.name).setEngName(infor.engname).setStatus(infor.status).setShowInfor(infor);
-            picasso.load(infor.imgUrl)
-                    .config(Bitmap.Config.RGB_565)
-                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
-                    .placeholder(R.drawable.hold)
-                    .into(item.getImageView());
-            item.getDataFromServer(mClient);
-            item.dayNum.addTextChangedListener(new TextWatcherWithItem(item) {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        if(isNetworkAvailable()) {
 
+            for(int i = 0; i < 7; i++){
+                MainItemLayout mainItemLayout = (MainItemLayout) selectedListLayout.getChildAt(i);
+                for(int j = 1; j < mainItemLayout.getChildCount(); j++){
+                    MainItem item = new MainItem(this);
+                    final MainItem mainItem = (MainItem) mainItemLayout.getChildAt(j);
+                    item.setName(mainItem.showInfor.name).setEngName(mainItem.showInfor.engname).setShowInfor(mainItem.showInfor);
+                    picasso.load(mainItem.showInfor.imgUrl)
+                            .config(Bitmap.Config.RGB_565)
+                            .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                            .placeholder(R.drawable.hold)
+                            .into(item.getImageView());
+                    item.getDataFromServer(mClient);
+                    item.status.addTextChangedListener(new TextWatcherWithItem(item) {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            sortAdd(getItem());
+                        }
+                    });
+                    mainItemLayout.remove(mainItem);
                 }
+            }
 
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    sortAdd(getItem());
-                }
-            });
 
         }
         ptrFrame.refreshComplete();
     }
 
 
-    private void setToolBarButtonSelector(){
-        menuButton.setOnTouchListener(new ImageButton.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    menuButton.setImageResource(R.mipmap.ic_menu_gray);
-                }
-                else if(event.getAction() == MotionEvent.ACTION_UP){
-                    menuButton.setImageResource(R.mipmap.ic_menu);
-                }
-                return false;
-            }
-        });
-        addButton.setOnTouchListener(new ImageButton.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    addButton.setImageResource(R.mipmap.ic_add_gray);
-                }
-                else if(event.getAction() == MotionEvent.ACTION_UP){
-                    addButton.setImageResource(R.mipmap.ic_add);
-                }
-                return false;
-            }
-        });
-    }
+
 
     private void sortAdd(MainItem item){
-        Log.i("sortAdd",selectedListLayout.getChildCount()+"");
-        if(selectedListLayout.getChildCount()!=0) {
-            int flag = 0;
-            for (int i = 0; i < selectedListLayout.getChildCount(); i++) {
-                MainItem titem = (MainItem) selectedListLayout.getChildAt(i);
-                if (Integer.valueOf(titem.showInfor.airDate) > Integer.valueOf(item.showInfor.airDate)) {
-                    Log.i("index",i+"");
-                    selectedListLayout.addView(item,i);
-                    flag = 1;
-                    Log.i("name",item.name.getText().toString());
-                    break;
-                }
-            }
-            if(flag == 0){
-                selectedListLayout.addView(item);
-            }
-        }
-        else{
-            selectedListLayout.addView(item);
-        }
+        Log.i("SortAdd",Integer.valueOf(item.showInfor.airDate)+"");
+        MainItemLayout mainItemLayout = (MainItemLayout) selectedListLayout.getChildAt(Integer.valueOf(item.showInfor.airDate));
+        mainItemLayout.showDayViewLayout(true);
+        mainItemLayout.addView(item);
+        Log.i("SortAdd",mainItemLayout.getChildCount()+"");
         insertData(item.showInfor);
         item.deleteButton.setOnClickListener(new OnClickListenerWithItem(item){
             @Override
@@ -309,7 +361,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        selectedListLayout.removeView(getItem());
+
+                        mainItemLayoutArray.get(Integer.valueOf(getItem().showInfor.airDate)).remove(getItem());
+
                         selectedList.remove(getItem().showInfor);
                         deleteData(getItem().showInfor);
                     }
@@ -329,7 +383,8 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 //判断发送的消息
-                case ADDVIEW: {
+                case NONET: {
+                    NoNetToast();
                     break;
                 }
 
@@ -338,13 +393,16 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    public void NoNetToast(){
+        Toast.makeText(this,"请检查网络连接",Toast.LENGTH_SHORT);
+    }
+
     public ArrayList<ShowsInfor> getData(){
         ArrayList<ShowsInfor> ShowList = new ArrayList<>();
         Cursor cursor = db.rawQuery("select * from SelectedShow",null);
+        Log.i("dbcount",cursor.getCount()+"================================");
 
-        if(cursor.moveToFirst()) {
-            for(int i = 0; i < cursor.getCount(); i++){
-                cursor.move(i);
+            while(cursor.moveToNext()){
                 ShowsInfor showsInfor = new ShowsInfor();
                 showsInfor.ID = cursor.getString(0);
                 showsInfor.name = cursor.getString(1);
@@ -358,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
                 showsInfor.airedEpisodeNumber = cursor.getString(9);
                 ShowList.add(showsInfor);
             }
-        }
+
         cursor.close();
         return ShowList;
     }

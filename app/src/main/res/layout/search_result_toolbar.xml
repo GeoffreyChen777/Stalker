@@ -3,7 +3,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="48dp"
-    android:background="@color/colorBlack"
+    android:background="@color/colorAA"
     android:gravity="center_vertical"
     android:id="@+id/searchResultToolbar"
     >
@@ -15,15 +15,14 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:background="@null"
-        android:src="@mipmap/ic_back_re"/>
+        android:src="@mipmap/ic_back_re_black"/>
     <TextView
         android:id="@+id/resultTextview"
         android:layout_width="80dp"
         android:layout_height="30dp"
         android:text="RESULT"
         android:textSize="18sp"
-        android:textColor="@color/colorBlack"
-        android:textStyle="bold"
+        android:textColor="@color/colorAA"
         android:background="@color/colorWhite"
         android:gravity="center"
         android:layout_centerHorizontal="true"
@@ -35,6 +34,6 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:background="@null"
-        android:src="@mipmap/ic_add_re"/>
+        android:src="@mipmap/ic_add_white"/>
 
 </RelativeLayout>

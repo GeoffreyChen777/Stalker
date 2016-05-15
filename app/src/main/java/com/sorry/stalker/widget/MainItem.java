@@ -1,6 +1,7 @@
 package com.sorry.stalker.widget;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
@@ -20,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONObject;
 import com.sorry.stalker.R;
 import com.sorry.stalker.activity.MainActivity;
 import com.sorry.stalker.datastructure.ShowsInfor;
@@ -40,13 +42,13 @@ import okhttp3.OkHttpClient;
 public class MainItem extends RelativeLayout {
     public TextView name;
     private TextView engName;
-    private TextView status;
-    private TextView infor;
+    public TextView status;
     public TextView dayNum;
     public ShowsInfor showInfor;
     private RelativeLayout optionLayout;
     private RelativeLayout mainLayout;
     protected final int UPDATETIME = 0x01;
+    protected final int UPDATEUI = 0x02;
     final ScaleAnimation optionScaleAnimation;
     final AlphaAnimation optionAlphaAnimation;
     final AnimationSet optionAnimation;
@@ -54,6 +56,7 @@ public class MainItem extends RelativeLayout {
     private Context context;
     public Button starButton;
     public Button deleteButton;
+    private OkHttpClient mClient;
 
     public MainItem(Context context) {
         this(context, null);
@@ -66,11 +69,14 @@ public class MainItem extends RelativeLayout {
         name = (TextView) findViewById(R.id.mainName);
         engName = (TextView) findViewById(R.id.mainEngName);
         status = (TextView) findViewById(R.id.mainShowStatus);
-        infor = (TextView) findViewById(R.id.mainShowInfor);
         dayNum = (TextView) findViewById(R.id.mainDayNum);
         starButton = (Button) findViewById(R.id.mainStar);
         deleteButton = (Button) findViewById(R.id.mainDelete);
-        dayNum.setShadowLayer(5F, 20F,20F, getResources().getColor(R.color.colorImageMask));
+        //dayNum.setShadowLayer(5F, 20F,20F, getResources().getColor(R.color.colorImageMask));
+        Typeface tf1 = Typeface.createFromAsset(getResources().getAssets(), "fonts/PingFang-SC-UltraLight.ttf");
+        dayNum.setTypeface(tf1);
+
+
         optionLayout = (RelativeLayout) findViewById(R.id.mainOptionLayout);
         mainLayout = (RelativeLayout) findViewById(R.id.mainLayout);
         this.context = context;
@@ -137,10 +143,7 @@ public class MainItem extends RelativeLayout {
         return MainItem.this;
     }
 
-    public MainItem setInfor(String infor){
-        this.infor.setText(infor);
-        return MainItem.this;
-    }
+
 
     public MainItem setDayNum(String dayNum){
         this.dayNum.setText(dayNum);
@@ -152,7 +155,8 @@ public class MainItem extends RelativeLayout {
     }
 
     public void getDataFromServer(OkHttpClient mClient){
-        Request request = new Request.Builder().url("http://115.159.29.107/stalker.php?id=" + this.showInfor.ID)
+        this.mClient = mClient;
+        Request request = new Request.Builder().url("http://api.tvmaze.com/lookup/shows?imdb=" + this.showInfor.ID)
                 .build();
         mClient.newCall(request).enqueue(new Callback() {
             @Override
@@ -163,47 +167,43 @@ public class MainItem extends RelativeLayout {
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    String text = response.body().string();
-                    Log.i("text",text);
-                    String[] strarray = text.split("&");
-                    int airdate;
-                    if("Sunday".equals(strarray[0])){
-                        airdate = 1;
-                    }else if("Monday".equals(strarray[0])){
-                        airdate = 2;
-                    }else if("Tuesday".equals(strarray[0])){
-                        airdate = 3;
-                    }else if("Wednesday".equals(strarray[0])){
-                        airdate = 4;
-                    }else if("Thursday".equals(strarray[0])){
-                        airdate = 5;
-                    }else if("Friday".equals(strarray[0])){
-                        airdate = 6;
-                    }else{
-                        airdate = 7;
-                    }
+                    String responseStr = response.body().string();
+
+                    JSONObject responseJson = JSONObject.parseObject(responseStr);
+                    showInfor.mazeID = responseJson.getString("id");
+
+                    showInfor.airDate = responseJson.getJSONObject("schedule").getJSONArray("days").get(0).toString();
                     final Calendar c = Calendar.getInstance();
                     c.setTimeZone(TimeZone.getTimeZone("GMT-4"));
                     int SmWay = c.get(Calendar.DAY_OF_WEEK);
-                    Log.i("date",SmWay+" ");
-                    Log.i("date",airdate+" ");
-                    Message message = new Message();
-                    message.what = UPDATETIME;
+
+                    int airdate;
+                    if("Sunday".equals(showInfor.airDate)){
+                        airdate = 2;
+                    }else if("Monday".equals(showInfor.airDate)){
+                        airdate = 3;
+                    }else if("Tuesday".equals(showInfor.airDate)){
+                        airdate = 4;
+                    }else if("Wednesday".equals(showInfor.airDate)){
+                        airdate = 5;
+                    }else if("Thursday".equals(showInfor.airDate)){
+                        airdate = 6;
+                    }else if("Friday".equals(showInfor.airDate)){
+                        airdate = 7;
+                    }else{
+                        airdate = 1;
+                    }
+
                     if(SmWay <= airdate){
-                        strarray[0] = String.valueOf(airdate-SmWay+1);
-                        message.obj = strarray;
+                        showInfor.airDate = String.valueOf(airdate-SmWay);
                     }
                     else{
-                        if((7+airdate-SmWay+1)!=7) {
-                            strarray[0] = String.valueOf(7 + airdate - SmWay + 1);
-                            message.obj = strarray;
-                        }
-                        else{
-                            strarray[0] = String.valueOf(0);
-                            message.obj = strarray;
-                        }
-
+                        showInfor.airDate = String.valueOf(7 + airdate - SmWay);
                     }
+
+                    Message message = new Message();
+                    message.what = UPDATETIME;
+                    message.obj = responseJson.getJSONObject("_links").getJSONObject("previousepisode").getString("href");
                     myHandler.sendMessage(message);
                 }
             }
@@ -211,21 +211,53 @@ public class MainItem extends RelativeLayout {
 
     }
 
-    public void UpdateTime(String[] data){
+    public void UpdateTime(String url){
+        Request request = new Request.Builder().url(url)
+                .build();
+        mClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.i("Stalker", "error");
+                Toast.makeText(MainItem.this.getContext(), "请检查网络连接", Toast.LENGTH_SHORT);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseStr = response.body().string();
+                    JSONObject responseJson = JSONObject.parseObject(responseStr);
+                    showInfor.airedSeason = responseJson.getString("season");
+                    showInfor.airedEpisodeNumber = responseJson.getString("number");
+                    Message message = new Message();
+                    message.what = UPDATEUI;
+                    myHandler.sendMessage(message);
+                }
+            }
+        });
+    }
+
+    public void sendIDToServer(String mazeID){
+        Request request = new Request.Builder().url("http://115.159.29.107/stalker_maze.php?id=" + mazeID)
+                .build();
+        mClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+            }
+        });
+    }
+
+    private void UpdateUI(){
         if(this.showInfor.status.equals("returning series")) {
-            this.showInfor.airDate = data[0];
-             this.showInfor.airedSeason = data[1];
-            this.showInfor.airedEpisodeNumber = data[2];
-            this.dayNum.setText(data[0]);
-            this.infor.setText("S" + data[1] + " E" + data[2]);
+            this.status.setText("returning series "+"S" + String.format("%02d", Integer.valueOf(showInfor.airedSeason)) + " E" + String.format("%02d", Integer.valueOf(showInfor.airedEpisodeNumber)));
         }
         else{
-            this.showInfor.airDate = "999999";
-            this.showInfor.airedSeason = data[1];
-            this.showInfor.airedEpisodeNumber = data[2];
-            this.dayNum.setText("N");
-            this.infor.setText("S" + data[1] + " E" + data[2]);
-
+            this.showInfor.airDate = "7";
+            this.status.setText(showInfor.status);
         }
 
     }
@@ -235,7 +267,12 @@ public class MainItem extends RelativeLayout {
             switch (msg.what) {
                 //判断发送的消息
                 case UPDATETIME: {
-                    UpdateTime((String[])msg.obj);
+                    UpdateTime(msg.obj.toString());
+                    break;
+                }
+                case UPDATEUI:{
+                    UpdateUI();
+                    sendIDToServer(showInfor.mazeID);
                     break;
                 }
 

@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="40dp"
     android:gravity="center">
     <com.wang.avi.AVLoadingIndicatorView
         android:id="@+id/avloadingIndicatorView"
-        android:layout_width="35dp"
-        android:layout_height="30dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:visibility="visible"
-        app:indicator="LineScale"
-        app:indicator_color="@color/colorBlack"
+        app:indicator="BallScaleMultiple"
+        app:indicator_color="@color/colorWhite"
         />
 </LinearLayout>
