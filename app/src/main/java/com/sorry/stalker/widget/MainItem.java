@@ -1,7 +1,11 @@
 package com.sorry.stalker.widget;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
@@ -21,13 +25,23 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sorry.stalker.R;
 import com.sorry.stalker.activity.MainActivity;
+import com.sorry.stalker.activity.SearchResultActivity;
+import com.sorry.stalker.activity.ShowMainActivity;
 import com.sorry.stalker.datastructure.ShowsInfor;
+import com.sorry.stalker.tools.TransBitmap;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 import okhttp3.Call;
@@ -35,6 +49,9 @@ import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.OkHttpClient;
+
+import static android.support.v4.app.ActivityCompat.startActivity;
+import static android.support.v4.app.ActivityCompat.startActivityForResult;
 
 /**
  * Created by sorry on 2016/5/8.
@@ -57,6 +74,8 @@ public class MainItem extends RelativeLayout {
     public Button starButton;
     public Button deleteButton;
     private OkHttpClient mClient;
+    private Map<String,String> genres;
+    private Picasso picasso;
 
     public MainItem(Context context) {
         this(context, null);
@@ -76,13 +95,18 @@ public class MainItem extends RelativeLayout {
         Typeface tf1 = Typeface.createFromAsset(getResources().getAssets(), "fonts/PingFang-SC-UltraLight.ttf");
         dayNum.setTypeface(tf1);
 
+        initGenres();
 
         optionLayout = (RelativeLayout) findViewById(R.id.mainOptionLayout);
         mainLayout = (RelativeLayout) findViewById(R.id.mainLayout);
         this.context = context;
+        picasso = new Picasso.Builder(context).build();
         showInfor = null;
         mainLayout.setOnLongClickListener(optionListener);
+        mainLayout.setOnClickListener(openShowListener);
         optionLayout.setOnClickListener(hideOptionListener);
+
+
 
         optionScaleAnimation = new ScaleAnimation(1.0f, 1.1f, 1.0f, 1.1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         optionScaleAnimation.setDuration(80);//设置动画持续时间
@@ -100,6 +124,35 @@ public class MainItem extends RelativeLayout {
         optionAnimation2.addAnimation(optionAlphaAnimation);
     }
 
+    private void initGenres(){
+        genres = new HashMap<>();
+        genres.put("Action","动作");
+        genres.put("Adult","成人");
+        genres.put("Adventure","冒险");
+        genres.put("Animals","动物");
+        genres.put("Anime","动漫");
+        genres.put("Children","儿童");
+        genres.put("Comedy","喜剧");
+        genres.put("Cooking","厨艺");
+        genres.put("Crime","犯罪");
+        genres.put("DIY","DIY");
+        genres.put("Drama","剧情");
+        genres.put("Espionage","谍战");
+        genres.put("Family","家庭");
+        genres.put("Fantasy","幻想");
+        genres.put("History","历史");
+        genres.put("Horror","恐怖");
+        genres.put("Medical","医学");
+        genres.put("Music","音乐");
+        genres.put("Mystery","悬疑");
+        genres.put("Romance","浪漫");
+        genres.put("Science-Fiction","科幻");
+        genres.put("Thriller","惊悚");
+        genres.put("Travel","旅行");
+        genres.put("War","战争");
+        genres.put("Western","西部");
+    }
+
     private OnLongClickListener optionListener = new OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
@@ -108,7 +161,16 @@ public class MainItem extends RelativeLayout {
             optionLayout.setVisibility(View.VISIBLE);
             starButton.startAnimation(optionAnimation);
             deleteButton.startAnimation(optionAnimation2);
-            return false;
+            return true;
+        }
+    };
+
+    private OnClickListener openShowListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(context, ShowMainActivity.class);
+            intent.putExtra("ShowInfor",(Serializable) showInfor);
+            context.startActivity(intent);
         }
     };
 
@@ -172,6 +234,16 @@ public class MainItem extends RelativeLayout {
                     JSONObject responseJson = JSONObject.parseObject(responseStr);
                     showInfor.mazeID = responseJson.getString("id");
 
+                    String genresStr = responseJson.getString("genres").replaceAll("\"","");
+                    genresStr = genresStr.substring(1, genresStr.length()-1);
+                    String[] genresArray = genresStr.split(",");
+                    genresStr = "";
+                    for(int i =0; i < genresArray.length; i++){
+                        genresStr = genresStr + genres.get(genresArray[i]) + "/";
+                    }
+                    genresStr = genresStr.substring(0, genresStr.length()-1);
+                    showInfor.genres = genresStr;
+                    showInfor.rank = responseJson.getJSONObject("rating").getString("average");
                     showInfor.airDate = responseJson.getJSONObject("schedule").getJSONArray("days").get(0).toString();
                     final Calendar c = Calendar.getInstance();
                     c.setTimeZone(TimeZone.getTimeZone("GMT-4"));
@@ -234,6 +306,56 @@ public class MainItem extends RelativeLayout {
                 }
             }
         });
+
+    }
+
+    public void updateCastandPoster(){
+        Request request = new Request.Builder().url("http://api.tvmaze.com/shows/" + showInfor.mazeID + "?embed[]=episodes&embed[]=cast")
+                .build();
+        mClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.i("Stalker", "error");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseStr = response.body().string();
+                    JSONObject responseJson = JSONObject.parseObject(responseStr);
+                    JSONArray castJsonArray = responseJson.getJSONObject("_embedded").getJSONArray("cast");
+                    JSONArray episodesJsonArray = responseJson.getJSONObject("_embedded").getJSONArray("episodes");
+
+                    String cast = "";
+                    for(int i = 0; i < castJsonArray.size(); i++){
+                        cast = cast + castJsonArray.getJSONObject(i).getJSONObject("person").getString("name").replace("\"","") + " / ";
+                    }
+                    showInfor.casts = cast.substring(0, cast.length()-3);
+                    for(int i = episodesJsonArray.size()-1; i >= 0; i--){
+                        if(episodesJsonArray.getJSONObject(i).getString("season").equals(showInfor.airedSeason)
+                                && episodesJsonArray.getJSONObject(i).getString("number").equals(showInfor.airedEpisodeNumber)){
+                            showInfor.updateEpisodeInfor[0].Season = showInfor.airedSeason;
+                            showInfor.updateEpisodeInfor[0].Episode = showInfor.airedEpisodeNumber;
+                            showInfor.updateEpisodeInfor[0].name = episodesJsonArray.getJSONObject(i).getString("name");
+                            if(i >= 1){
+                                showInfor.updateEpisodeInfor[1].Season = episodesJsonArray.getJSONObject(i-1).getString("season");
+                                showInfor.updateEpisodeInfor[1].Episode = episodesJsonArray.getJSONObject(i-1).getString("number");
+                                showInfor.updateEpisodeInfor[1].name = episodesJsonArray.getJSONObject(i-1).getString("name");
+                            }
+                            if(i >= 2){
+                                showInfor.updateEpisodeInfor[2].Season = episodesJsonArray.getJSONObject(i-2).getString("season");
+                                showInfor.updateEpisodeInfor[2].Episode = episodesJsonArray.getJSONObject(i-2).getString("number");
+                                showInfor.updateEpisodeInfor[2].name = episodesJsonArray.getJSONObject(i-2).getString("name");
+                            }
+                        }
+                    }
+                    showInfor.ifHasAllInfor = true;
+
+                }
+            }
+        });
+
+
     }
 
     public void sendIDToServer(String mazeID){
@@ -271,6 +393,7 @@ public class MainItem extends RelativeLayout {
                     break;
                 }
                 case UPDATEUI:{
+                    updateCastandPoster();
                     UpdateUI();
                     sendIDToServer(showInfor.mazeID);
                     break;

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    android:layout_width="300dp"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    android:layout_alignParentRight="true"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <ImageButton
+            android:id="@+id/hideListButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@mipmap/ic_back_re_thin_black_reverse"
+            android:background="@null"
+            />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/hideListButton">
+            <LinearLayout
+                android:id="@+id/scrollListLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+            </LinearLayout>
+
+        </ScrollView>
+    </RelativeLayout>

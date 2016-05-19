@@ -283,8 +283,9 @@ public class MainActivity extends AppCompatActivity {
                         sortAdd(getItem());
                     }
                 });
-
+                item.updateCastandPoster();
             }
+
         }else{
             Message message = new Message();
             message.what = NONET;
@@ -304,7 +305,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void RefreshUI(){
         if(isNetworkAvailable()) {
-
             for(int i = 0; i < 7; i++){
                 MainItemLayout mainItemLayout = (MainItemLayout) selectedListLayout.getChildAt(i);
                 for(int j = 1; j < mainItemLayout.getChildCount(); j++){
@@ -333,6 +333,7 @@ public class MainActivity extends AppCompatActivity {
                             sortAdd(getItem());
                         }
                     });
+                    item.updateCastandPoster();
                     mainItemLayout.remove(mainItem);
                 }
             }

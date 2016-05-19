@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp">
+        <View
+            android:id="@+id/TitleView"
+            android:layout_centerVertical="true"
+            android:layout_width="4dp"
+            android:layout_height="18dp"
+            android:layout_marginLeft="20dp"
+            android:background="@color/colorBlack"/>
+        <TextView
+            android:id="@+id/seasonTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="15dp"
+            android:layout_toRightOf="@id/TitleView"
+            android:text="Season 4"
+            android:textColor="@color/colorBlack"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/episodeItemLayout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="32dp"
+        android:layout_height="wrap_content">
+
+    </LinearLayout>
+</LinearLayout>

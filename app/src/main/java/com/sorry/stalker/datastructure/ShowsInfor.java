@@ -20,7 +20,12 @@ public class ShowsInfor implements Serializable {
     public String airDate;
     public String airedSeason;
     public String airedEpisodeNumber;
-    public Bitmap bitmap;
+    public byte[] bitmap;
+    public String rank;
+    public String genres;
+    public String casts;
+    public EpisodeInfor[] updateEpisodeInfor;
+    public boolean ifHasAllInfor;
 
     public ShowsInfor() {
         ID = "";
@@ -35,7 +40,20 @@ public class ShowsInfor implements Serializable {
         airedSeason = "";
         airedEpisodeNumber = "";
         bitmap = null;
+        rank = "";
+        genres = "";
+        casts = "";
+        updateEpisodeInfor = new EpisodeInfor[3];
+        ifHasAllInfor = false;
 
+        for(int i = 0; i < 3; i++) {
+            EpisodeInfor episodeInfor = new EpisodeInfor();
+            updateEpisodeInfor[i] = episodeInfor;
+            updateEpisodeInfor[i].name = "";
+            updateEpisodeInfor[i].Episode = "";
+            updateEpisodeInfor[i].Season = "";
+            updateEpisodeInfor[i].btTorrent = "";
+        }
     }
 
     @Override
