@@ -224,7 +224,6 @@ public class MainItem extends RelativeLayout {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.i("Stalker", "error");
-                Toast.makeText(MainItem.this.getContext(), "请检查网络连接", Toast.LENGTH_SHORT);
             }
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
@@ -395,7 +394,7 @@ public class MainItem extends RelativeLayout {
                 case UPDATEUI:{
                     updateCastandPoster();
                     UpdateUI();
-                    sendIDToServer(showInfor.mazeID);
+                    //sendIDToServer(showInfor.mazeID);
                     break;
                 }
 

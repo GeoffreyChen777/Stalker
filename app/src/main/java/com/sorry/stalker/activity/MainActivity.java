@@ -347,11 +347,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void sortAdd(MainItem item){
-        Log.i("SortAdd",Integer.valueOf(item.showInfor.airDate)+"");
         MainItemLayout mainItemLayout = (MainItemLayout) selectedListLayout.getChildAt(Integer.valueOf(item.showInfor.airDate));
         mainItemLayout.showDayViewLayout(true);
         mainItemLayout.addView(item);
-        Log.i("SortAdd",mainItemLayout.getChildCount()+"");
         insertData(item.showInfor);
         item.deleteButton.setOnClickListener(new OnClickListenerWithItem(item){
             @Override

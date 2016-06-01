@@ -38,4 +38,5 @@ dependencies {
     compile 'com.frostwire:jlibtorrent:1.1.0.30'
     compile 'com.frostwire:jlibtorrent-android-arm:1.1.0.30'
     compile 'com.frostwire:jlibtorrent-android-x86:1.1.0.30'
+    compile project(':vitamio')
 }

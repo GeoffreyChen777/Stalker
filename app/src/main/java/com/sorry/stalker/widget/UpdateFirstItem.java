@@ -3,6 +3,7 @@ package com.sorry.stalker.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -14,6 +15,7 @@ import com.sorry.stalker.R;
 public class UpdateFirstItem extends RelativeLayout {
 
     private TextView episodeNameTextView;
+    private ImageButton playButton;
 
     public UpdateFirstItem(Context context) {
         this(context, null);
@@ -24,11 +26,16 @@ public class UpdateFirstItem extends RelativeLayout {
         // 导入布局
         LayoutInflater.from(context).inflate(R.layout.update_first_item, this, true);
         episodeNameTextView = (TextView) findViewById(R.id.episodesName);
+        playButton = (ImageButton) findViewById(R.id.playButton);
     }
 
     public void setEpisodeName(String episodeName, String seasonNum, String episodeNum){
         String season = String.format("%02d", Integer.valueOf(seasonNum));
         String episode = String.format("%02d", Integer.valueOf(episodeNum));
         this.episodeNameTextView.setText("S" + season + " E" + episode + "   " + episodeName);
+
+    }
+    public ImageButton getButton(){
+        return playButton;
     }
 }

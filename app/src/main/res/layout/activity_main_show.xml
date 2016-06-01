@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
     <RelativeLayout
         android:id="@+id/mainInforLayout"
@@ -191,4 +193,65 @@
         android:layout_height="match_parent"
         android:layout_marginLeft="-20dp"
         />
+    <RelativeLayout
+        android:id="@+id/downloadStatusLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"
+        >
+        <ImageView
+            android:layout_width="250dp"
+            android:layout_height="200dp"
+            android:src="@drawable/downloading_bg"
+            android:scaleType="centerInside"/>
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/avloading"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="60dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:visibility="visible"
+            app:indicator="LineScalePulseOutRapid"
+            app:indicator_color="@color/colorBlack"
+            />
+        <TextView
+            android:id="@+id/downloadStatus"
+            android:layout_width="200dp"
+            android:gravity="center_horizontal"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:layout_below="@id/avloading"
+            android:text="搜索资源中..."
+            android:textColor="@color/colorBlack"
+            android:textSize="12sp"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/subtitleLayout"
+        android:layout_width="400dp"
+        android:layout_height="300dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/downloading_bg"
+        android:visibility="invisible"
+        >
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginBottom="30dp">
+            <LinearLayout
+                android:id="@+id/subtitleScrollLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+            </LinearLayout>
+        </ScrollView>
+
+
+    </RelativeLayout>
 </RelativeLayout>
