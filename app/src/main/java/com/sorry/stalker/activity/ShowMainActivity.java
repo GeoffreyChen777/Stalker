@@ -74,7 +74,7 @@ import okhttp3.Response;
 /**
  * Created by sorry on 2016/5/17.
  */
-public class ShowMainActivity extends AppCompatActivity {
+public class ShowMainActivity extends Activity {
     private TextView rankTextView;
     private TextView showNameTextView;
     private TextView showGenresTextView;

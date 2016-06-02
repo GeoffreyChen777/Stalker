@@ -58,7 +58,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.Cache;
 
-public class SearchResultActivity extends AppCompatActivity {
+public class SearchResultActivity extends Activity {
 
     private String searchText;
     private OkHttpClient mClient;
