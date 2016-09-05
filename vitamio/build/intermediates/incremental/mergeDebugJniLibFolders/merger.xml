@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="/home/sorry/Documents/Android Development/Stalker/vitamio/libs"><file name="armeabi-v7a/libvinit.so" path="/home/sorry/Documents/Android Development/Stalker/vitamio/libs/armeabi-v7a/libvinit.so"/><file name="armeabi/libvinit.so" path="/home/sorry/Documents/Android Development/Stalker/vitamio/libs/armeabi/libvinit.so"/></source></dataSet><dataSet config="debug"><source path="/home/sorry/Documents/Android Development/Stalker/vitamio/src/debug/jniLibs"/></dataSet></merger>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@drawable/mask_re">
+
+            <ImageButton
+                android:id="@+id/mediacontroller_top_back"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/ic_back_re_thin"
+                android:background="@null"
+                android:layout_marginTop="10dp"/>
+
+            <TextView
+                android:id="@+id/mediacontroller_file_name"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:layout_alignTop="@id/mediacontroller_top_back"
+                android:layout_toRightOf="@id/mediacontroller_top_back"
+                android:text="Title"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_med"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/mask">
+
+
+            <RelativeLayout
+                android:id="@+id/progressBarLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp">
+                <TextView
+                    android:id="@+id/mediacontroller_time_current"
+                    style="@style/MediaController_Text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dp"
+                    android:text="33:33:33"
+                    />
+
+                <TextView
+                    android:id="@+id/mediacontroller_time_total"
+                    style="@style/MediaController_Text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:text="33:33:33"/>
+
+                <SeekBar
+                    android:id="@+id/mediacontroller_seekbar"
+                    style="@style/MediaController_SeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@id/mediacontroller_time_total"
+                    android:layout_toRightOf="@id/mediacontroller_time_current"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:focusable="true"
+                    android:max="1000"/>
+            </RelativeLayout>
+            <ImageButton
+                android:id="@+id/mediacontroller_play_pause"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerHorizontal="true"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/ic_pause"
+                android:background="@null"
+                android:layout_below="@id/progressBarLayout"
+                />
+            <ImageButton
+                android:id="@+id/subtitlelistButton"
+                android:layout_width="25dp"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:layout_alignParentBottom="true"
+                android:scaleType="centerInside"
+                android:src="@mipmap/ic_list"
+                android:background="@null"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="字幕"
+                android:layout_toLeftOf="@id/subtitlelistButton"
+                android:layout_alignTop="@id/subtitlelistButton"
+                android:layout_marginRight="5dp"/>
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

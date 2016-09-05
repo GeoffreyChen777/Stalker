@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@color/colorBlack">
 
     <io.vov.vitamio.widget.CenterLayout
         android:id="@+id/dd"
@@ -23,9 +24,94 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/dd"
-        android:layout_centerInParent="true"
-        android:text="subtitle"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
+        android:text=""
+        android:textSize="15sp"
+        android:textColor="@color/colorWhite"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/controlLayout"
+        >
+        <RelativeLayout
+            android:id="@+id/brightnessLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="invisible">
+            <ImageView
+                android:id="@+id/icbrightness"
+                android:layout_centerVertical="true"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/ic_brightness"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/brightnessTextView"
+                android:layout_toRightOf="@id/icbrightness"
+                android:text="45"
+                android:textSize="20sp"
+                android:layout_marginLeft="10dp"
+                android:layout_centerVertical="true"
+                />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/volumeLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="invisible">
+            <ImageView
+                android:id="@+id/icvolume"
+                android:layout_centerVertical="true"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:scaleType="centerCrop"
 
-        android:textColor="@color/colorAA"/>
+                android:src="@mipmap/ic_volume"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/volumeTextView"
+                android:layout_toRightOf="@id/icvolume"
+                android:text="45"
+                android:textSize="20sp"
+                android:layout_marginLeft="10dp"
+                android:layout_centerVertical="true"
+                />
+        </RelativeLayout>
 
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/subtitleListLayout"
+        android:layout_width="250dp"
+        android:layout_height="200dp"
+        android:layout_marginBottom="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+
+        android:visibility="invisible">
+        <ScrollView
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+
+            >
+            <LinearLayout
+                android:id="@+id/subtitleListScrollLayout"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/colorImageMask">
+
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
 </RelativeLayout>

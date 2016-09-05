@@ -46,6 +46,7 @@ import com.sorry.stalker.R;
 import com.sorry.stalker.datastructure.EpisodeInfor;
 import com.sorry.stalker.datastructure.ShowsInfor;
 import com.sorry.stalker.tools.Downloader;
+import com.sorry.stalker.tools.Rar;
 import com.sorry.stalker.tools.TransBitmap;
 import com.sorry.stalker.tools.UnitConversion;
 import com.sorry.stalker.tools.Zip;
@@ -484,7 +485,7 @@ public class ShowMainActivity extends Activity {
                     break;
                 }
                 case DOWNLOADEDSUBTITLE:{
-                    unZipSubtitle((String)msg.obj);
+                    extractSubtitle((String)msg.obj);
                     break;
                 }
 
@@ -493,54 +494,63 @@ public class ShowMainActivity extends Activity {
         }
     };
 
-    private void unZipSubtitle(String fileName){
-        Log.i("unzip======",fileName);
-        try {
-            File file = new File("/storage/emulated/0/Stalker/subtitle/" + fileName);
-            Zip.upZipFile(file, "/storage/emulated/0/Stalker/subtitle/" + currentEspisodeEng);
+    private void extractSubtitle(String fileName){
+        Log.i("ExtractSubtitle","=======");
+        if(fileName.endsWith("zip")) {
+            try {
+                File file = new File("/storage/emulated/0/Stalker/subtitle/" + currentEspisodeEng+ "/" + fileName);
+                Zip.upZipFile(file, "/storage/emulated/0/Stalker/subtitle/" + currentEspisodeEng);
+            } catch (Exception e) {
+                Log.i("unzip======Error", e.toString());
+            }
         }
-        catch (Exception e){
-            Log.i("unzip======Error",e.toString());
+        if(fileName.endsWith("rar")) {
+            try {
+                File sFile = new File("/storage/emulated/0/Stalker/subtitle/" + currentEspisodeEng+"/" + fileName);
+                File dFile = new File("/storage/emulated/0/Stalker/subtitle/" + currentEspisodeEng);
+                Rar.unRarFile(sFile.getAbsolutePath(), dFile.getAbsolutePath());
+            } catch (Exception e) {
+                Log.i("unRAR======Error", e.toString());
+            }
         }
 
     }
     private void downloadSubtitle(String linkJson){
         JSONObject jsonObject = JSONObject.parseObject(linkJson);
         String downloadLink = jsonObject.getString("url");
-        Downloader._downloadAsyn(downloadLink, "/storage/emulated/0/Stalker/subtitle", mClient, mainShowHandler);
+        Downloader._downloadAsyn(downloadLink, "/storage/emulated/0/Stalker/subtitle/"+currentEspisodeEng, mClient, mainShowHandler);
     }
 
     private void playVideo(String videoPath){
+
         downloadStatusLayout.setVisibility(View.INVISIBLE);
         downloadStatusTextView.setText("搜索资源中...");
-        System.out.print(videoPath);
+        Log.i("VideoPath",videoPath);
         Intent intent=new Intent();
         intent.setClass(ShowMainActivity.this, VideoPlayerActivity.class);
-        File file=new File(videoPath);
-        File[] tempList = file.listFiles();
-        for (int i = 0; i < tempList.length; i++) {
-            if (tempList[i].isFile()) {
-                if(tempList[i].getName().endsWith(".mp4") || tempList[i].getName().endsWith(".mkv")){
-                    intent.putExtra("videoPath", tempList[i].getAbsolutePath());
+        File file = new File(videoPath);
+        if(file.isDirectory()) {
+            File[] tempList = file.listFiles();
+            for (int i = 0; i < tempList.length; i++) {
+                if (tempList[i].isFile()) {
+                    if (tempList[i].getName().endsWith(".mp4") || tempList[i].getName().endsWith(".mkv")) {
+                        intent.putExtra("videoPath", tempList[i].getAbsolutePath());
+                    }
                 }
             }
         }
-        File subFile = new File("/storage/emulated/0/Stalker/subtitle/" + currentEspisodeEng);
-        File[] tempList2 = subFile.listFiles();
-        for (int i = 0; i < tempList2.length; i++) {
-            if (tempList2[i].isFile()) {
-                if(tempList2[i].getName().endsWith(".ass") || tempList2[i].getName().endsWith(".srt")
-                        || tempList2[i].getName().endsWith(".ssa") || tempList2[i].getName().endsWith(".smi")
-                        || tempList2[i].getName().endsWith(".sub")){
-                    intent.putExtra("subtitlePath", tempList2[i].getAbsolutePath());
-                    break;
-                }
-            }
+        else{
+            intent.putExtra("videoPath", file.getAbsolutePath());
         }
+
+        intent.putExtra("subtitlePath", "/storage/emulated/0/Stalker/subtitle/" + currentEspisodeEng);
+
+        intent.putExtra("title", currentEspisodeEng);
         startActivity(intent);
     }
 
     private void getSubtitle(String name){
+        Log.i("getSubtitle",name);
         String url = "http://115.159.29.107/subtitle.php?id=" + name;
         Request request = new Request.Builder().url(url).build();
         mClient.newCall(request).enqueue(new Callback() {
@@ -560,40 +570,45 @@ public class ShowMainActivity extends Activity {
     }
 
     private void updateSubtitleUI(String subtitle){
-        subtitleLayout.setVisibility(View.VISIBLE);
+        //subtitleLayout.setVisibility(View.VISIBLE);
         JSONArray jsonArray = JSONArray.parseArray(subtitle);
-        for (int i =0; i < jsonArray.size(); i++){
+        for (int i =0; i < jsonArray.size() && i < 4; i++){
             final JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+            /*
             SubtitleItem subtitleItem = new SubtitleItem(this);
             subtitleItem.subtitleID = jsonObject.getString("id");
             subtitleItem.setSubtitleTextView(jsonObject.getString("title"));
             subtitleItem.getLayout().setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    String url = "http://115.159.29.107/download_subtitle.php?id=" + jsonObject.getString("id");
-                    Request request = new Request.Builder().url(url).build();
-                    mClient.newCall(request).enqueue(new Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                            Log.i("Subtitle","error");
-                        }
+                public void onClick(View v) {*/
+            String url = "http://115.159.29.107/download_subtitle.php?id=" + jsonObject.getString("id");
+            Request request = new Request.Builder().url(url).build();
+            mClient.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Log.i("Subtitle","error");
+                }
 
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            Message msg = new Message();
-                            msg.obj = response.body().string();
-                            msg.what = DOWNLOADSUBTITLE;
-                            mainShowHandler.sendMessage(msg);
-                        }
-                    });
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    Message msg = new Message();
+                    msg.obj = response.body().string();
+                    msg.what = DOWNLOADSUBTITLE;
+                    mainShowHandler.sendMessage(msg);
                 }
             });
-            subtitleScrollLayout.addView(subtitleItem);
+            /*
+                }
+            });
+            subtitleScrollLayout.addView(subtitleItem);*/
         }
     }
 
 
     private void downloadVideo(final String torrentName){
+        Message msg = new Message();
+        msg.what = GETSUBTITLE;
+        mainShowHandler.sendMessage(msg);
         downloadStatusTextView.setText("缓冲资源中...速度会越来越快请耐心等一会~");
         File torrentFile = new File("/storage/emulated/0/Stalker/torrent/" + torrentName);
 

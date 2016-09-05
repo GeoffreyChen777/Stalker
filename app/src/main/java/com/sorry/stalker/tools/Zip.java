@@ -1,5 +1,9 @@
 package com.sorry.stalker.tools;
 
+import android.util.Log;
+
+import org.zeroturnaround.zip.ZipUtil;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,6 +28,7 @@ public class Zip{
     }
 
     public static void upZipFile(File zipFile, String folderPath) throws ZipException,IOException {
+        /*
         File desDir = new File(folderPath);
         if (!desDir.exists()) {
         // 创建目标目录
@@ -36,8 +41,16 @@ public class Zip{
             ZipEntry entry = ((ZipEntry) entries.nextElement());
             InputStream is = zf.getInputStream(entry);
             String str = folderPath + File.separator + entry.getName();
-        // 转换编码，避免中文时乱码
-            str = new String(str.getBytes("8859_1"), "GB2312");
+            Log.i("oldUnzipName",str);
+            StringBuffer result = new StringBuffer();
+            for(int i = 0;i<str.length();i++){
+                char a = str.charAt(i);
+                if((((int)a)>=65&&((int)a)<=90)||(((int)a)>=97&&((int)a)<=122)||(((int)a)>=48&&((int)a)<=57)||a==' '||a=='.'||a=='/'){
+                    result.append(a);
+                }
+            }
+            str = result.toString();
+            Log.i("unzipName",str);
             File desFile = new File(str);
             if (!desFile.exists()) {
                 File fileParentDir = desFile.getParentFile();
@@ -58,6 +71,9 @@ public class Zip{
             is.close();
             os.close();
         }
-        zf.close();
+        zf.close();*/
+        Log.i("unzipName",zipFile.getAbsolutePath());
+        ZipUtil.unpack(zipFile, new File(folderPath));
     }
+
 }

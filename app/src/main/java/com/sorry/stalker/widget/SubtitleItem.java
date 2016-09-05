@@ -25,6 +25,7 @@ import okhttp3.Response;
 public class SubtitleItem extends LinearLayout{
 
     private TextView subtitleTextView;
+    private TextView subtitleFormatTextView;
     private LinearLayout subtitleItemLayout;
     public String subtitleID;
     private OkHttpClient mClient;
@@ -38,6 +39,7 @@ public class SubtitleItem extends LinearLayout{
         // 导入布局
         LayoutInflater.from(context).inflate(R.layout.subtitle_item, this, true);
         subtitleTextView = (TextView) findViewById(R.id.subtitleTextView);
+        subtitleFormatTextView = (TextView) findViewById(R.id.subtitleFormatTextView);
         subtitleItemLayout = (LinearLayout) findViewById(R.id.subtitleItemLayout);
         subtitleID = "";
         mClient = new OkHttpClient();
@@ -49,6 +51,7 @@ public class SubtitleItem extends LinearLayout{
     }
 
     public void setSubtitleTextView(String name){
+        subtitleFormatTextView.setText(name.substring(name.length()-3,name.length()));
         subtitleTextView.setText(name);
     }
 

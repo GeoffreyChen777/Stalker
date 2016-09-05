@@ -80,7 +80,6 @@ public class SearchResultActivity extends Activity {
     protected static final int NORESULTIDENTIFIER = 0x103;
     protected static final int UPDATESINGLEIDENTIFIER = 0x104;
     protected static final int NORMAL_RESULT = 0x10;
-    protected static final int SMALL_RESULT = 0x11;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -379,5 +378,9 @@ public class SearchResultActivity extends Activity {
         }
         return false;
     }
+
+    //============================Reconstruction============
+
+
 
 }

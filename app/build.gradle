@@ -39,4 +39,9 @@ dependencies {
     compile 'com.frostwire:jlibtorrent-android-arm:1.1.0.30'
     compile 'com.frostwire:jlibtorrent-android-x86:1.1.0.30'
     compile project(':vitamio')
+    compile files('libs/apache-commons-logging.jar')
+    compile files('libs/zt-zip-1.8.jar')
+    compile files('libs/slf4j-api-1.7.21.jar')
+    compile project(':core')
+    compile project(':model')
 }

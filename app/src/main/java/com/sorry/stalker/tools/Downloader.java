@@ -92,7 +92,7 @@ public class Downloader {
 
 
                     msg.obj = getFileName(url, msg);
-                    Log.i("handlerwhat===",String.valueOf(msg.what));
+
                     handler.sendMessage(msg);
                 } catch (IOException e)
                 {
@@ -151,19 +151,12 @@ public class Downloader {
 
                 s.addListener(new TorrentAlertAdapter(th) {
                     boolean played = false;
-                    boolean subtitled = false;
                     @Override
                     public void blockFinished(BlockFinishedAlert alert) {
                         int p = (int) (th.getStatus().getProgress() * 100);
 
-                        System.out.println("Progress: " + p + " for torrent name: " + alert.torrentName());
-                        System.out.println(s.getStats().download());
-                        if(p >= 0 && !subtitled){
-                            subtitled = true;
-                            Message msg = new Message();
-                            msg.what = GETSUBTITLE;
-                            mainShowHandler.sendMessage(msg);
-                        }
+                        //System.out.println("Progress: " + p + " for torrent name: " + alert.torrentName());
+                        //System.out.println(s.getStats().download());
                         if(p > 1 && !played){
                             played = true;
                             Message msg = new Message();
@@ -175,7 +168,7 @@ public class Downloader {
 
                     @Override
                     public void stateChanged(StateChangedAlert alert) {
-                        System.out.println(th.getStatus().getState().toString());
+                        //System.out.println(th.getStatus().getState().toString());
                         super.stateChanged(alert);
                     }
 
